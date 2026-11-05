@@ -22,7 +22,74 @@ input,select{background:#0e1116;color:var(--tx);border:1px solid var(--line);bor
 img{max-width:100%;border-radius:8px}.kpi{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:.4rem}.kpi div{background:#12171e;border:1px solid var(--line);border-radius:8px;padding:.35rem .7rem}
 .hide{display:none}.pgc{width:100%;height:230px;display:block;background:#12171e;border:1px solid var(--line);border-radius:8px}.pgleg{display:flex;flex-wrap:wrap;gap:.2rem .8rem;font-size:.8rem;margin:.1rem 0 .3rem}.pgleg i{display:inline-block;width:.9rem;height:.25rem;vertical-align:middle;margin-right:.3rem;border-radius:2px}#pg_t td,#pg_t th{padding:.25rem .35rem;font-size:.82rem;white-space:nowrap}#pg_s td,#pg_s th{padding:.25rem .35rem;font-size:.82rem}.pgk{min-width:7.5rem}.pgk b{font-size:1.25rem}.ev{display:flex;gap:.5rem;padding:.3rem 0;border-bottom:1px solid var(--line);font-size:.85rem}.ev .t{color:var(--mu);white-space:nowrap}
 #progreso>*:not(h2):not(#pg_meta):not(#pg_h1){display:none!important}</style></head><body>
-<!--awake--><div id="awake" style="background:#0b0e13;color:#8b95a5;font:13px system-ui,sans-serif;padding:.25rem 1rem">Awake: Contador 544 · Hora 14:40:35 CST (2026-11-05)</div>
+<!--awake--><div id="awake" style="background:#0b0e13;color:#8b95a5;font:13px system-ui,sans-serif;padding:.25rem 1rem">Awake: Contador 625 · Hora 21:31:03 CST (2026-11-05)</div>
+<!--MACHSTATUS-->
+<div id="mach_status" role="status" style="display:flex;gap:1rem;justify-content:center;background:#0b0e13;color:#c9d1dc;font:600 15px system-ui,sans-serif;padding:.45rem 1rem">
+  <span id="st_mac">Mac: …</span>
+  <span id="st_box">Box: …</span>
+</div>
+<script>
+(function(){
+  var LIM=10*60*1000;
+  var URLS={
+    mac:['data/heartbeat_mac.json','https://inodeman.github.io/mk-pages/data/heartbeat_mac.json','https://raw.githubusercontent.com/inodeman/mk-pages/main/data/heartbeat_mac.json'],
+    box:['data/heartbeat_box.json','https://inodeman.github.io/mk-pages/data/heartbeat_box.json','https://raw.githubusercontent.com/inodeman/mk-pages/main/data/heartbeat_box.json']
+  };
+  function set(machine,on){
+    var el=document.getElementById(machine==='mac'?'st_mac':'st_box'); if(!el)return;
+    var name=machine==='mac'?'Mac':'Box';
+    el.textContent=name+': '+(on?'Prendida':'Apagada');
+    el.style.color=on?'#7dffb0':'#ff9a9a';
+  }
+  function stamp(j){
+    if(!j)return null;
+    if(typeof j.ts==='number')return j.ts*1000;
+    if(j.utc){var t=Date.parse(j.utc); return isNaN(t)?null:t}
+    return null;
+  }
+  async function one(machine){
+    var list=URLS[machine];
+    for(var i=0;i<list.length;i++){
+      try{
+        var r=await fetch(list[i]+(list[i].indexOf('?')>=0?'&':'?')+'t='+Date.now(),{cache:'no-store'});
+        if(!r.ok)continue;
+        var ts=stamp(await r.json());
+        if(ts==null)continue;
+        var age=Date.now()-ts;
+        set(machine, age>=-60000 && age<LIM);
+        return;
+      }catch(e){}
+    }
+    set(machine,false);
+  }
+  async function all(){await one('mac'); await one('box');}
+  all(); setInterval(all,60000);
+})();
+</script>
+<div id="goro_box" style="max-width:1100px;margin:.6rem auto;padding:.7rem 1rem;background:#171c24;border:1px solid #2a313c;border-radius:12px;color:#e6e9ee;font:14px system-ui,sans-serif">
+<b>Scorpion vs Goro (eval, Mac)</b> <small id="goro_upd" style="color:#8b95a5"></small>
+<div id="goro_kpi" style="display:flex;flex-wrap:wrap;gap:1rem;margin:.4rem 0">Cargando…</div>
+<svg id="goro_svg" viewBox="0 0 600 140" style="width:100%;height:140px;background:#12171e;border-radius:8px"></svg>
+<small style="color:#8b95a5">Línea roja: % de victorias contra Goro por hora (24 h). Barras grises: peleas por hora.</small>
+</div>
+<script>
+(function(){
+ function draw(d){
+  var k=document.getElementById('goro_kpi'),t=d.total||{};
+  k.innerHTML='<span>Peleas: <b>'+(t.fights||0)+'</b></span><span>Victorias: <b>'+(t.wins||0)+'</b></span><span>% victorias: <b>'+(t.win_pct==null?'-':t.win_pct.toFixed(1)+'%')+'</b></span><span>Daño hecho prom.: <b>'+(t.avg_dealt==null?'-':t.avg_dealt.toFixed(2))+'</b></span><span>Daño recibido prom.: <b>'+(t.avg_taken==null?'-':t.avg_taken.toFixed(2))+'</b></span>';
+  document.getElementById('goro_upd').textContent=d.updated?('actualizado '+d.updated):'';
+  var h=d.hourly||[],svg=document.getElementById('goro_svg'),W=600,H=140,n=Math.max(h.length,1),mx=1,o='';
+  h.forEach(function(b){if(b.fights>mx)mx=b.fights});
+  h.forEach(function(b,i){var bw=W/n,bh=(b.fights/mx)*(H-20);o+='<rect x="'+(i*bw+1)+'" y="'+(H-bh)+'" width="'+(bw-2)+'" height="'+bh+'" fill="#2a313c"/>'});
+  var pts=[];h.forEach(function(b,i){if(b.fights>0)pts.push(((i+.5)*W/n)+','+(H-(b.win_pct/100)*(H-20)))});
+  if(pts.length)o+='<polyline fill="none" stroke="#ff5252" stroke-width="2" points="'+pts.join(' ')+'"/>';
+  svg.innerHTML=o;
+ }
+ function load(){fetch('data/goro_stats.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json()}).then(draw).catch(function(){document.getElementById('goro_kpi').textContent='Sin datos de Goro todavía'})}
+ load();setInterval(load,60000);
+})();
+</script>
+<!--/MACHSTATUS-->
 
 
 
@@ -31,7 +98,312 @@ img{max-width:100%;border-radius:8px}.kpi{display:flex;flex-wrap:wrap;gap:.6rem;
 
 
 
-<!--PUBTS--><script>window.PUB_TS=1793911706;</script><!--/PUBTS-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--PUBTS--><script>window.PUB_TS=1794184054;</script><!--/PUBTS-->
 <div id="uptime_bar" role="status" style="background:#2a2f38;color:#c9d1dc;font:600 15px system-ui,sans-serif;padding:.6rem 1rem;border-bottom:2px solid #3a4250;text-align:center">Comprobando estado de la computadora…</div>
 <script>
 /* 2026-11-03 indicador «Box apagada / sin enviar info»: PUB_TS = epoch de la ultima publicacion (lo escribe scorpion_pages.py en cada push); compara con la hora actual del navegador. Hora de Monterrey. */
@@ -310,10 +682,14 @@ function pgH1(d){try{const H=d.h1;if(!H){$('pg_h1').innerHTML='<span class="mu">
  const pe=(w,n)=>n?'<b>'+(100*w/n).toFixed(0)+'%</b> <small class="mu">'+w+'/'+n+'</small>':'<span class="mu">—</span>',S=H.spec;
  const fh=t=>t?t.slice(11,16):'';
  $('pg_meta').innerHTML='Datos '+esc(d.updated)+' (hora Ciudad Juárez = MST, UTC-7; Monterrey = +1 h) · <b>SOLO última hora móvil (60 min)</b> · conteo reiniciado cuando el Scorpio10-2 restaurado empezó a pelear: <b>'+esc(H.since_box)+' MST = '+esc(H.since_mty)+' Monterrey</b> · ventana actual: <b>'+esc(fh(H.window_from_box))+'→ahora MST ('+esc(fh(H.window_from_mty))+' Monterrey), '+H.minutes+' min'+(H.full_hour?'':' (aún menos de 60 min desde el reinicio)')+'</b>';
- let h='<h4>Peleas 1 a 10 · últimos 60 min (EVAL = principal, greedy; entrenamiento = secundario)</h4><table><tr><th>Pelea</th><th>EVAL últ. 60 min (n)</th><th class="mu">Entreno últ. 60 min (n)</th></tr>';
- Object.keys(H.win).sort((a,b)=>a-b).forEach(k=>{const o=H.win[k];h+='<tr><td><b>'+k+'</b></td><td>'+pe(o.eval.w,o.eval.n)+'</td><td class="mu">'+pe(o.train.w,o.train.n)+'</td></tr>'});
- const SE=H.spec_eval||S,ST=H.spec_train||{},rw=(lb,X,c)=>'<tr'+(c?' class="mu"':'')+'><td><b>'+lb+'</b></td><td>'+pe(X.hit||0,X.throw||0)+'</td><td>'+pe(X.tp_hit||0,X.tp_exec||0)+'</td><td>'+pe(X.uc_ok||0,X.uc_n||0)+'</td><td>'+pe(X.fat_ok||0,X.fat_n||0)+'</td></tr>';
- h+='</table><h4>Especiales y fatality · EVALUACIÓN vs ENTRENAMIENTO (separados) · últimos 60 min</h4><table><tr><th>Grupo</th><th>Lanza conecta</th><th>Teleport conecta</th><th>Uppercut agachado tras cadena <small class="mu">(UC tras lanza, dmg≥7)</small></th><th>Fatalities <small class="mu">(logradas/oportunidades)</small></th></tr>'+rw('EVALUACIÓN (role eval, greedy)',SE,0)+rw('Entrenamiento (train/remote/rehearse)',ST,1)+'</table><p><small class="mu">Sin total mezclado: cada fila cuenta solo su grupo. Práctica/drill excluidos.</small></p>';
+ let h='<h4>Peleas 1 a 10 y Goro (11) · últimos 60 min (EVAL = principal, greedy; entrenamiento = secundario)</h4><table><tr><th>Pelea</th><th>EVAL últ. 60 min (n)</th><th class="mu">Entreno últ. 60 min (n)</th></tr>';
+ Object.keys(H.win).sort((a,b)=>a-b).forEach(k=>{const o=H.win[k];h+='<tr><td><b>'+(k=='11'?'11 · Goro':k)+'</b></td><td>'+pe(o.eval.w,o.eval.n)+'</td><td class="mu">'+pe(o.train.w,o.train.n)+'</td></tr>'});
+ const SE=H.spec_eval||S,ST=H.spec_train||{};
+ const ucCell=(X,train)=>{const n=X.uc_n||0; if(!train) return pe(X.uc_ok||0,n)+' <small class="mu">solo política</small>';
+  const pr=X.uc_ok_propio||0, fz=X.uc_ok_forced||0, um=X.uc_ok_unmarked||0;
+  return '<b>propios</b> '+pr+(n?'/'+n:'')+' · <b>forzados</b> '+fz+(um?(' · <span class="mu">sin marca '+um+'</span>'):'');};
+ const rw=(lb,X,c)=>'<tr'+(c?' class="mu"':'')+'><td><b>'+lb+'</b></td><td>'+pe(X.hit||0,X.throw||0)+'</td><td>'+pe(X.tp_hit||0,X.tp_exec||0)+'</td><td>'+ucCell(X,!!c)+'</td><td>'+pe(X.fat_ok||0,X.fat_n||0)+'</td></tr>';
+ h+='</table><h4>Especiales y fatality · EVALUACIÓN vs ENTRENAMIENTO (separados) · últimos 60 min</h4><table><tr><th>Grupo</th><th>Lanza conecta</th><th>Teleport conecta</th><th>Uppercut agachado tras cadena <small class="mu">(UC REAL 0x107+a13+dmg≥7; EVAL=solo política; ENTRENO=propios si la política eligió a13 / forzados si forced_spup disparó; a23 kick no cuenta)</small></th><th>Fatalities <small class="mu">(logradas/oportunidades)</small></th></tr>'+rw('EVALUACIÓN (role eval, greedy · solo política)',SE,0)+rw('Entrenamiento (train/remote/rehearse)',ST,1)+'</table><p><small class="mu">Sin total mezclado: cada fila cuenta solo su grupo. Práctica/drill excluidos. t5991u: propios vs forzados en entrenamiento.</small></p>';
  const NM={'6':'#6 · Teleport efectivo','11':'#11 · Contra-lanza vs Scorpion (vs2p)','7':'#7 · Fatality (FINISH HIM)','12':'#12 · Patadas saltando atrás/adelante'};
  h+='<h4>Emuladores de práctica dedicados (t5768) · eventos y recompensa pagada, últimos 60 min y desde que se activaron ('+esc(H.drill_from_box.slice(11,16))+' MST = '+esc(H.drill_from_mty.slice(11,16))+' Monterrey)</h4><table><tr><th>Emulador</th><th>Evento (tipo/resultado)</th><th>n</th><th>recompensa</th></tr>';
  Object.keys(NM).forEach(a=>{const o=(H.drill||{})[a]||{},ks=Object.keys(o).filter(k=>o[k].n).sort();h+=ks.length?ks.map((k,i)=>'<tr><td>'+(i?'':'<b>'+esc(NM[a])+'</b>')+'</td><td>'+esc(k)+'</td><td>'+o[k].n+'</td><td>'+o[k].rew.toFixed(2)+'</td></tr>').join(''):'<tr><td><b>'+esc(NM[a])+'</b></td><td colspan="3" class="mu">sin eventos pagados todavía</td></tr>'});
@@ -381,7 +757,7 @@ function mqGo(a){const m=$('mq_m').value,c=$('mq_c').value,n=Math.max(1,Math.min
 function scMode(){$('sc_lvl_l').style.display=''}
 function scGo(a){const md=$('sc_mode').value,nt=nets('sc');if(!nt){alert('Elige al menos una red');return false}a.href=iss('order scorpion','mode='+md+'\nlevel='+$('sc_lvl').value+'\nqty='+Math.max(1,Math.min(10,+$('sc_n').value||1))+'\nmachine='+$('sc_m').value+'\nnets='+nt);return true}
 function DV(v){if(!v||!v.dev)return '';const c={GPU:'#1a9d4a','CPU':'#c77700','CPU-fallback':'#c0392b','NUBE':'#4a7bd0','?':'#888'}[v.dev]||'#888';const t={GPU:'GPU',CPU:'CPU','CPU-fallback':'CPU (fallback)',NUBE:'nube','?':'GPU/CPU ?'}[v.dev]||v.dev;return ' <span title="'+esc((v.where||'')+(v.live?' · en vivo':' · último render')+' · '+(v.device?v.device+' · ':'')+(v.why||''))+'" style="background:'+c+';color:#fff;border-radius:4px;padding:0 5px;font-size:.8em;white-space:nowrap">'+(v.where==='Mac'?'Mac ':v.where==='Box'?'Box ':'')+t+'</span>'}
-async function machq(){document.querySelectorAll('[data-sl]').forEach(a=>a.href=iss('set mac slots='+a.dataset.sl,'set mac slots='+a.dataset.sl));document.querySelectorAll('[data-tg]').forEach(a=>a.href=iss('set target '+a.dataset.tg,'set target '+a.dataset.tg));document.querySelectorAll('[data-rn]').forEach(a=>a.href=iss('render now '+a.dataset.rn,'render now '+a.dataset.rn));const d=await J('data/machq.json');_MQ=d;const sel=$('mq_c');if(sel&&!sel.options.length)sel.innerHTML=(d.channels||[]).map(c=>'<option value="'+c.id+'">'+esc(c.name)+'</option>').join('');const sl=$('sc_lvl');if(sl&&d.scorpion){const L=d.scorpion.levels||[];sl.innerHTML=L.map(x=>'<option value="'+x+'">Nivel '+x+'</option>').join('');$('sc_note').textContent='Niveles alcanzables hoy: 1 a '+d.scorpion.frontier+' (frontera de Scorpion). Los pedidos se graban solos (cola → grabación → render → publicación) en la máquina elegida; YouTube y Facebook (vertical 9:16) se publican automáticamente, TikTok aún no tiene subidor. El estado real de cada pedido aparece abajo.'}
+async function machq(){document.querySelectorAll('[data-sl]').forEach(a=>a.href=iss('set mac slots='+a.dataset.sl,'set mac slots='+a.dataset.sl));document.querySelectorAll('[data-tg]').forEach(a=>a.href=iss('set target '+a.dataset.tg,'set target '+a.dataset.tg));document.querySelectorAll('[data-rn]').forEach(a=>a.href=iss('render now '+a.dataset.rn,'render now '+a.dataset.rn));const d=await J('data/machq.json');_MQ=d;const sel=$('mq_c');if(sel&&!sel.options.length)sel.innerHTML=(d.channels||[]).map(c=>'<option value="'+c.id+'">'+esc(c.name)+'</option>').join('');const sl=$('sc_lvl');if(sl&&d.scorpion){const L=d.scorpion.levels||[];sl.innerHTML=L.map(x=>'<option value="'+x+'">Nivel '+x+(x==11?' · Goro':'')+'</option>').join('');$('sc_note').textContent='Niveles alcanzables hoy: 1 a '+d.scorpion.frontier+' (frontera de Scorpion). Los pedidos se graban solos (cola → grabación → render → publicación) en la máquina elegida; YouTube y Facebook (vertical 9:16) se publican automáticamente, TikTok aún no tiene subidor. El estado real de cada pedido aparece abajo.'}
  const L=a=>a&&a.length?'<br><small>'+a.map(esc).join('<br>')+'</small>':' —';
  const G=d.mac_gpu,ago=t=>{if(!t)return 'sin registro';const m=Math.round((Date.now()/1000-t)/60);return m<1?'hace <1 min':m<120?'hace '+m+' min':'hace '+Math.floor(m/60)+' h '+(m%60)+' min'};
  $('mq_gpu').innerHTML='GPU Mac: '+(G?(G.now>0?'<b class="g">EN USO ahora ('+G.now+'%)</b>':'<b>no se usa ahora</b> · usada por última vez <b>'+ago(G.last_ts)+'</b>'+(G.last_pct?' ('+G.last_pct+'%)':'')+(G.last_src?' <small class="mu">('+esc(G.last_src)+')</small>':'')):'sin datos del agente de la Mac')+' · renders en paralelo (slots): <b>'+(d.mac_slots==null?'?':d.mac_slots)+'</b> · ';
