@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Última hora · Mac y Box</title>
+<style>
+:root{--bg:#0e1116;--card:#171c24;--line:#2a313c;--tx:#e6e9ee;--mu:#8b95a5;--ok:#3ddc84;--bad:#ff5252;--ac:#8ab4ff;--warn:#ffb74d}
+*{box-sizing:border-box}body{margin:0;font:15px/1.45 system-ui,sans-serif;background:var(--bg);color:var(--tx)}
+header{display:flex;justify-content:space-between;gap:1rem;align-items:center;padding:.8rem 1rem;border-bottom:1px solid var(--line);background:#0b0e13}
+h1{font-size:1.2rem;margin:0}h2{font-size:1.05rem;margin:0 0 .6rem}
+a{color:var(--ac)}
+main{max-width:1100px;margin:0 auto;padding:1rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1rem;margin:0 0 1rem}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(max-width:800px){.grid{grid-template-columns:1fr}}
+table{border-collapse:collapse;width:100%;font-size:.88rem}td,th{padding:.35rem .45rem;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{color:var(--mu);font-weight:600}
+.mu,small{color:var(--mu)}.nodata{color:var(--warn);font-weight:700}
+.warn{background:#3a2a00;color:var(--warn);padding:.5rem .7rem;border-radius:8px}
+.hide{display:none}
+input{background:#0e1116;color:var(--tx);border:1px solid var(--line);border-radius:6px;padding:.3rem .45rem}
+button{background:#2f6fe0;color:#fff;border:0;border-radius:7px;padding:.35rem .8rem;font-weight:600;cursor:pointer}
+</style>
+</head>
+<body>
+<header>
+  <h1>Última hora · Mac y Box</h1>
+  <a href="index.html">Panel anterior</a>
+</header>
+<main>
+<p class="mu">Solo la última hora de peleas nativas de cada máquina, etapas 1 a 10 y Goro por separado. Evaluación y entrenamiento no se mezclan. Esta página vuelve a pedir los archivos cada 5 minutos mientras sigue abierta; recargarla no publica nada.</p>
+<section class="card" id="lock">
+  <h2>Panel privado</h2>
+  <p class="mu">Misma contraseña que el panel anterior. Los números viajan cifrados.</p>
+  <input id="pw" type="password" placeholder="contraseña" autocomplete="current-password">
+  <button id="go" type="button">Entrar</button>
+  <p id="msg" class="mu"></p>
+</section>
+<section id="app" class="hide">
+  <p><button id="out" type="button">Cerrar sesión</button></p>
+  <div id="boards"></div>
+</section>
+</main>
+<script src="panel/hora.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const u8=x=>Uint8Array.from(atob(x),c=>c.charCodeAt(0));
+let CFG={},KEY=localStorage.getItem('k')||'',UNL=false,SESSION=MKHora.emptySession(),TIMER=0;
+async function dec(e,k){
+  const kk=await crypto.subtle.importKey('raw',new Uint8Array(k.match(/../g).map(h=>parseInt(h,16))),'AES-GCM',false,['decrypt']);
+  return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:u8(e.iv)},kk,u8(e.ct))));
+}
+async function dkey(pw){
+  const km=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveBits']);
+  const hx=CFG.ksalt.match(/../g).map(h=>parseInt(h,16));
+  const b=await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt:new Uint8Array(hx),iterations:CFG.iter||100000},km,256);
+  return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+async function chk(k){
+  try{const r=await fetch('data/check.enc.json?t='+Date.now(),{cache:'no-store'});return (await dec(await r.json(),k)).ok===1}catch(e){return false}
+}
+async function loadEnc(name){
+  try{
+    const bust=Math.floor(Date.now()/MKHora.CADENCE_MS);
+    const r=await fetch('data/'+name+'.enc.json?t='+bust,{cache:'no-store'});
+    if(!r.ok)return null;
+    return await dec(await r.json(),KEY);
+  }catch(e){return null}
+}
+async function load(){
+  if(!UNL)return;
+  const mac=await loadEnc('hora_mac');
+  const box=await loadEnc('hora_box');
+  const now=Date.now();
+  SESSION=MKHora.observe(SESSION,{mac:mac,box:box},now);
+  $('boards').innerHTML=MKHora.render({now:now,mac:mac,box:box,session:SESSION});
+}
+function show(on){
+  UNL=on;
+  $('app').classList.toggle('hide',!on);
+  $('lock').classList.toggle('hide',on);
+  if(TIMER){clearInterval(TIMER);TIMER=0}
+  if(on){load();TIMER=setInterval(load,MKHora.CADENCE_MS)}
+}
+async function unlock(){
+  const msg=$('msg');
+  if(!CFG.ksalt){msg.textContent='Panel sin configurar.';return}
+  msg.textContent='verificando…';
+  const k=await dkey($('pw').value);
+  if(await chk(k)){KEY=k;localStorage.setItem('k',k);$('pw').value='';msg.textContent='';show(true)}
+  else msg.textContent='Contraseña incorrecta.';
+}
+function lock(){localStorage.removeItem('k');KEY='';location.reload()}
+$('go').onclick=unlock;
+$('pw').addEventListener('keydown',e=>{if(e.key==='Enter')unlock()});
+$('out').onclick=lock;
+(async()=>{
+  try{CFG=await (await fetch('data/config.json?t='+Date.now(),{cache:'no-store'})).json()}catch(e){CFG={}}
+  if(KEY&&await chk(KEY))show(true);else{localStorage.removeItem('k');KEY=''}
+})();
+</script>
+</body>
+</html>
