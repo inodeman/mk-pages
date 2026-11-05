@@ -22,7 +22,7 @@ input,select{background:#0e1116;color:var(--tx);border:1px solid var(--line);bor
 img{max-width:100%;border-radius:8px}.kpi{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:.4rem}.kpi div{background:#12171e;border:1px solid var(--line);border-radius:8px;padding:.35rem .7rem}
 .hide{display:none}.pgc{width:100%;height:230px;display:block;background:#12171e;border:1px solid var(--line);border-radius:8px}.pgleg{display:flex;flex-wrap:wrap;gap:.2rem .8rem;font-size:.8rem;margin:.1rem 0 .3rem}.pgleg i{display:inline-block;width:.9rem;height:.25rem;vertical-align:middle;margin-right:.3rem;border-radius:2px}#pg_t td,#pg_t th{padding:.25rem .35rem;font-size:.82rem;white-space:nowrap}#pg_s td,#pg_s th{padding:.25rem .35rem;font-size:.82rem}.pgk{min-width:7.5rem}.pgk b{font-size:1.25rem}.ev{display:flex;gap:.5rem;padding:.3rem 0;border-bottom:1px solid var(--line);font-size:.85rem}.ev .t{color:var(--mu);white-space:nowrap}
 #progreso>*:not(h2):not(#pg_meta):not(#pg_h1){display:none!important}</style></head><body>
-<!--awake--><div id="awake" style="background:#0b0e13;color:#8b95a5;font:13px system-ui,sans-serif;padding:.25rem 1rem">Awake: Contador 483 · Hora 09:16:51 CST (2026-11-05)</div>
+<!--awake--><div id="awake" style="background:#0b0e13;color:#8b95a5;font:13px system-ui,sans-serif;padding:.25rem 1rem">Awake: Contador 542 · Hora 14:30:30 CST (2026-11-05)</div>
 
 
 
@@ -31,7 +31,7 @@ img{max-width:100%;border-radius:8px}.kpi{display:flex;flex-wrap:wrap;gap:.6rem;
 
 
 
-<!--PUBTS--><script>window.PUB_TS=1793892100;</script><!--/PUBTS-->
+<!--PUBTS--><script>window.PUB_TS=1793910631;</script><!--/PUBTS-->
 <div id="uptime_bar" role="status" style="background:#2a2f38;color:#c9d1dc;font:600 15px system-ui,sans-serif;padding:.6rem 1rem;border-bottom:2px solid #3a4250;text-align:center">Comprobando estado de la computadora…</div>
 <script>
 /* 2026-11-03 indicador «Box apagada / sin enviar info»: PUB_TS = epoch de la ultima publicacion (lo escribe scorpion_pages.py en cada push); compara con la hora actual del navegador. Hora de Monterrey. */
@@ -312,7 +312,7 @@ function pgH1(d){try{const H=d.h1;if(!H){$('pg_h1').innerHTML='<span class="mu">
  $('pg_meta').innerHTML='Datos '+esc(d.updated)+' (hora Ciudad Juárez = MST, UTC-7; Monterrey = +1 h) · <b>SOLO última hora móvil (60 min)</b> · conteo reiniciado cuando el Scorpio10-2 restaurado empezó a pelear: <b>'+esc(H.since_box)+' MST = '+esc(H.since_mty)+' Monterrey</b> · ventana actual: <b>'+esc(fh(H.window_from_box))+'→ahora MST ('+esc(fh(H.window_from_mty))+' Monterrey), '+H.minutes+' min'+(H.full_hour?'':' (aún menos de 60 min desde el reinicio)')+'</b>';
  let h='<h4>Peleas 1 a 10 · últimos 60 min (EVAL = principal, greedy; entrenamiento = secundario)</h4><table><tr><th>Pelea</th><th>EVAL últ. 60 min (n)</th><th class="mu">Entreno últ. 60 min (n)</th></tr>';
  Object.keys(H.win).sort((a,b)=>a-b).forEach(k=>{const o=H.win[k];h+='<tr><td><b>'+k+'</b></td><td>'+pe(o.eval.w,o.eval.n)+'</td><td class="mu">'+pe(o.train.w,o.train.n)+'</td></tr>'});
- h+='</table><h4>Especiales y fatality en peleas normales · últimos 60 min</h4><table><tr><th>Lanza conecta</th><th>Teleport conecta</th><th>Fatalities</th></tr><tr><td>'+pe(S.hit,S.throw)+'</td><td>'+pe(S.tp_hit,S.tp_exec)+'</td><td>'+pe(S.fat_ok,S.fat_n)+' <small class="mu">logradas/oportunidades</small></td></tr></table>';
+ h+='</table><h4>Especiales y fatality en peleas normales · últimos 60 min</h4><table><tr><th>Lanza conecta</th><th>Teleport conecta</th><th>Uppercut agachado tras cadena</th><th>Fatalities</th></tr><tr><td>'+pe(S.hit,S.throw)+'</td><td>'+pe(S.tp_hit,S.tp_exec)+'</td><td>'+pe(S.uc_ok||0,S.uc_n||0)+' <small class="mu">UC tras lanza (post-spear, dmg≥7)</small></td><td>'+pe(S.fat_ok,S.fat_n)+' <small class="mu">logradas/oportunidades</small></td></tr></table>';
  const NM={'6':'#6 · Teleport efectivo','11':'#11 · Contra-lanza vs Scorpion (vs2p)','7':'#7 · Fatality (FINISH HIM)','12':'#12 · Patadas saltando atrás/adelante'};
  h+='<h4>Emuladores de práctica dedicados (t5768) · eventos y recompensa pagada, últimos 60 min y desde que se activaron ('+esc(H.drill_from_box.slice(11,16))+' MST = '+esc(H.drill_from_mty.slice(11,16))+' Monterrey)</h4><table><tr><th>Emulador</th><th>Evento (tipo/resultado)</th><th>n</th><th>recompensa</th></tr>';
  Object.keys(NM).forEach(a=>{const o=(H.drill||{})[a]||{},ks=Object.keys(o).filter(k=>o[k].n).sort();h+=ks.length?ks.map((k,i)=>'<tr><td>'+(i?'':'<b>'+esc(NM[a])+'</b>')+'</td><td>'+esc(k)+'</td><td>'+o[k].n+'</td><td>'+o[k].rew.toFixed(2)+'</td></tr>').join(''):'<tr><td><b>'+esc(NM[a])+'</b></td><td colspan="3" class="mu">sin eventos pagados todavía</td></tr>'});
