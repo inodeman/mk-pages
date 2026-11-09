@@ -1,19 +1,19 @@
 {
- "updated": "2026-11-08 21:36 MST",
- "ts": 1794199003,
+ "updated": "2026-11-09 11:38 MST",
+ "ts": 1794249479,
  "total": {
-  "fights": 11,
-  "wins": 0,
-  "win_pct": 0.0,
-  "avg_dealt": 1.2399774138904573,
-  "avg_taken": 2.1360813099943528
+  "fights": 264,
+  "wins": 26,
+  "win_pct": 9.848484848484848,
+  "avg_dealt": 1.483201581027668,
+  "avg_taken": 2.183535667231319
  },
  "last60": {
-  "fights": 11,
-  "wins": 0,
-  "win_pct": 0.0,
-  "avg_dealt": 1.2399774138904573,
-  "avg_taken": 2.1360813099943528
+  "fights": 21,
+  "wins": 3,
+  "win_pct": 14.285714285714286,
+  "avg_dealt": 1.8009464655427385,
+  "avg_taken": 2.304643596569062
  },
  "hourly": [
   {
@@ -22,132 +22,6 @@
    "win_pct": 0,
    "avg_dealt": null,
    "avg_taken": null,
-   "hour": "22:00",
-   "ts": 1794114000
-  },
-  {
-   "fights": 0,
-   "wins": 0,
-   "win_pct": 0,
-   "avg_dealt": null,
-   "avg_taken": null,
-   "hour": "23:00",
-   "ts": 1794117600
-  },
-  {
-   "fights": 0,
-   "wins": 0,
-   "win_pct": 0,
-   "avg_dealt": null,
-   "avg_taken": null,
-   "hour": "00:00",
-   "ts": 1794121200
-  },
-  {
-   "fights": 0,
-   "wins": 0,
-   "win_pct": 0,
-   "avg_dealt": null,
-   "avg_taken": null,
-   "hour": "01:00",
-   "ts": 1794124800
-  },
-  {
-   "fights": 0,
-   "wins": 0,
-   "win_pct": 0,
-   "avg_dealt": null,
-   "avg_taken": null,
-   "hour": "02:00",
-   "ts": 1794128400
-  },
-  {
-   "fights": 0,
-   "wins": 0,
-   "win_pct": 0,
-   "avg_dealt": null,
-   "avg_taken": null,
-   "hour": "03:00",
-   "ts": 1794132000
-  },
-  {
-   "fights": 0,
-   "wins": 0,
-   "win_pct": 0,
-   "avg_dealt": null,
-   "avg_taken": null,
-   "hour": "04:00",
-   "ts": 1794135600
-  },
-  {
-   "fights": 0,
-   "wins": 0,
-   "win_pct": 0,
-   "avg_dealt": null,
-   "avg_taken": null,
-   "hour": "05:00",
-   "ts": 1794139200
-  },
-  {
-   "fights": 0,
-   "wins": 0,
-   "win_pct": 0,
-   "avg_dealt": null,
-   "avg_taken": null,
-   "hour": "06:00",
-   "ts": 1794142800
-  },
-  {
-   "fights": 0,
-   "wins": 0,
-   "win_pct": 0,
-   "avg_dealt": null,
-   "avg_taken": null,
-   "hour": "07:00",
-   "ts": 1794146400
-  },
-  {
-   "fights": 0,
-   "wins": 0,
-   "win_pct": 0,
-   "avg_dealt": null,
-   "avg_taken": null,
-   "hour": "08:00",
-   "ts": 1794150000
-  },
-  {
-   "fights": 0,
-   "wins": 0,
-   "win_pct": 0,
-   "avg_dealt": null,
-   "avg_taken": null,
-   "hour": "09:00",
-   "ts": 1794153600
-  },
-  {
-   "fights": 0,
-   "wins": 0,
-   "win_pct": 0,
-   "avg_dealt": null,
-   "avg_taken": null,
-   "hour": "10:00",
-   "ts": 1794157200
-  },
-  {
-   "fights": 0,
-   "wins": 0,
-   "win_pct": 0,
-   "avg_dealt": null,
-   "avg_taken": null,
-   "hour": "11:00",
-   "ts": 1794160800
-  },
-  {
-   "fights": 0,
-   "wins": 0,
-   "win_pct": 0,
-   "avg_dealt": null,
-   "avg_taken": null,
    "hour": "12:00",
    "ts": 1794164400
   },
@@ -224,141 +98,267 @@
    "ts": 1794193200
   },
   {
-   "fights": 11,
+   "fights": 0,
    "wins": 0,
    "win_pct": 0,
-   "avg_dealt": 1.2399774138904573,
-   "avg_taken": 2.1360813099943528,
+   "avg_dealt": null,
+   "avg_taken": null,
    "hour": "21:00",
    "ts": 1794196800
+  },
+  {
+   "fights": 16,
+   "wins": 0,
+   "win_pct": 0,
+   "avg_dealt": 1.0958850931677018,
+   "avg_taken": 2.110248447204969,
+   "hour": "22:00",
+   "ts": 1794200400
+  },
+  {
+   "fights": 17,
+   "wins": 1,
+   "win_pct": 5.882352941176471,
+   "avg_dealt": 1.3967848008768726,
+   "avg_taken": 2.1775666788454506,
+   "hour": "23:00",
+   "ts": 1794204000
+  },
+  {
+   "fights": 0,
+   "wins": 0,
+   "win_pct": 0,
+   "avg_dealt": null,
+   "avg_taken": null,
+   "hour": "00:00",
+   "ts": 1794207600
+  },
+  {
+   "fights": 0,
+   "wins": 0,
+   "win_pct": 0,
+   "avg_dealt": null,
+   "avg_taken": null,
+   "hour": "01:00",
+   "ts": 1794211200
+  },
+  {
+   "fights": 0,
+   "wins": 0,
+   "win_pct": 0,
+   "avg_dealt": null,
+   "avg_taken": null,
+   "hour": "02:00",
+   "ts": 1794214800
+  },
+  {
+   "fights": 0,
+   "wins": 0,
+   "win_pct": 0,
+   "avg_dealt": null,
+   "avg_taken": null,
+   "hour": "03:00",
+   "ts": 1794218400
+  },
+  {
+   "fights": 0,
+   "wins": 0,
+   "win_pct": 0,
+   "avg_dealt": null,
+   "avg_taken": null,
+   "hour": "04:00",
+   "ts": 1794222000
+  },
+  {
+   "fights": 0,
+   "wins": 0,
+   "win_pct": 0,
+   "avg_dealt": null,
+   "avg_taken": null,
+   "hour": "05:00",
+   "ts": 1794225600
+  },
+  {
+   "fights": 158,
+   "wins": 6,
+   "win_pct": 3.7974683544303796,
+   "avg_dealt": 1.3580863275414736,
+   "avg_taken": 2.164124538092617,
+   "hour": "06:00",
+   "ts": 1794229200
+  },
+  {
+   "fights": 11,
+   "wins": 3,
+   "win_pct": 27.272727272727273,
+   "avg_dealt": 1.8260869565217392,
+   "avg_taken": 2.3500846979107846,
+   "hour": "07:00",
+   "ts": 1794232800
+  },
+  {
+   "fights": 20,
+   "wins": 6,
+   "win_pct": 30.0,
+   "avg_dealt": 2.127329192546584,
+   "avg_taken": 2.284782608695652,
+   "hour": "08:00",
+   "ts": 1794236400
+  },
+  {
+   "fights": 12,
+   "wins": 3,
+   "win_pct": 25.0,
+   "avg_dealt": 1.7349896480331264,
+   "avg_taken": 2.101966873706004,
+   "hour": "09:00",
+   "ts": 1794240000
+  },
+  {
+   "fights": 15,
+   "wins": 5,
+   "win_pct": 33.333333333333336,
+   "avg_dealt": 1.779710144927536,
+   "avg_taken": 2.1739130434782603,
+   "hour": "10:00",
+   "ts": 1794243600
+  },
+  {
+   "fights": 15,
+   "wins": 2,
+   "win_pct": 13.333333333333334,
+   "avg_dealt": 1.703933747412008,
+   "avg_taken": 2.2906832298136646,
+   "hour": "11:00",
+   "ts": 1794247200
   }
  ],
  "stage_last60": {
   "11": {
    "eval": {
-    "n": 15,
-    "w": 0
+    "n": 21,
+    "w": 3
    },
    "train": {
-    "n": 521,
-    "w": 0
-   }
-  },
-  "5": {
-   "eval": {
-    "n": 13,
-    "w": 9
-   },
-   "train": {
-    "n": 68,
-    "w": 43
-   }
-  },
-  "6": {
-   "eval": {
-    "n": 14,
-    "w": 9
-   },
-   "train": {
-    "n": 53,
-    "w": 32
+    "n": 554,
+    "w": 95
    }
   },
   "3": {
    "eval": {
-    "n": 11,
-    "w": 8
-   },
-   "train": {
-    "n": 50,
-    "w": 31
-   }
-  },
-  "2": {
-   "eval": {
-    "n": 24,
-    "w": 20
-   },
-   "train": {
-    "n": 44,
-    "w": 35
-   }
-  },
-  "10": {
-   "eval": {
     "n": 18,
-    "w": 11
-   },
-   "train": {
-    "n": 47,
-    "w": 26
-   }
-  },
-  "8": {
-   "eval": {
-    "n": 12,
-    "w": 8
-   },
-   "train": {
-    "n": 56,
     "w": 18
+   },
+   "train": {
+    "n": 15,
+    "w": 15
    }
   },
   "9": {
    "eval": {
-    "n": 16,
-    "w": 11
-   },
-   "train": {
-    "n": 36,
-    "w": 20
-   }
-  },
-  "1": {
-   "eval": {
-    "n": 14,
-    "w": 10
-   },
-   "train": {
-    "n": 52,
-    "w": 47
-   }
-  },
-  "4": {
-   "eval": {
-    "n": 17,
+    "n": 13,
     "w": 12
    },
    "train": {
-    "n": 52,
-    "w": 47
+    "n": 24,
+    "w": 23
    }
   },
   "7": {
    "eval": {
-    "n": 9,
-    "w": 5
+    "n": 15,
+    "w": 15
    },
    "train": {
-    "n": 48,
-    "w": 24
+    "n": 20,
+    "w": 19
+   }
+  },
+  "10": {
+   "eval": {
+    "n": 21,
+    "w": 20
+   },
+   "train": {
+    "n": 13,
+    "w": 13
+   }
+  },
+  "6": {
+   "eval": {
+    "n": 16,
+    "w": 16
+   },
+   "train": {
+    "n": 19,
+    "w": 19
+   }
+  },
+  "5": {
+   "eval": {
+    "n": 17,
+    "w": 17
+   },
+   "train": {
+    "n": 20,
+    "w": 20
+   }
+  },
+  "8": {
+   "eval": {
+    "n": 14,
+    "w": 14
+   },
+   "train": {
+    "n": 17,
+    "w": 12
+   }
+  },
+  "1": {
+   "eval": {
+    "n": 13,
+    "w": 13
+   },
+   "train": {
+    "n": 11,
+    "w": 11
+   }
+  },
+  "4": {
+   "eval": {
+    "n": 12,
+    "w": 12
+   },
+   "train": {
+    "n": 11,
+    "w": 11
+   }
+  },
+  "2": {
+   "eval": {
+    "n": 9,
+    "w": 9
+   },
+   "train": {
+    "n": 18,
+    "w": 18
    }
   }
  },
- "mode": "box",
+ "mode": "standalone",
  "train_total": {
-  "fights": 296,
-  "wins": 0,
-  "win_pct": 0.0,
-  "avg_dealt": 0.779733926473057,
-  "avg_taken": 2.019284035588383
+  "fights": 9962,
+  "wins": 408,
+  "win_pct": 4.09556313993174,
+  "avg_dealt": 1.2340708356350405,
+  "avg_taken": 2.133730536286335
  },
  "train_last60": {
-  "fights": 296,
-  "wins": 0,
-  "win_pct": 0.0,
-  "avg_dealt": 0.779733926473057,
-  "avg_taken": 2.019284035588383
+  "fights": 550,
+  "wins": 95,
+  "win_pct": 17.272727272727273,
+  "avg_dealt": 1.68686617730096,
+  "avg_taken": 2.267972896668548
  },
  "train_hourly": [
   {
@@ -367,132 +367,6 @@
    "win_pct": 0,
    "avg_dealt": null,
    "avg_taken": null,
-   "hour": "22:00",
-   "ts": 1794114000
-  },
-  {
-   "fights": 0,
-   "wins": 0,
-   "win_pct": 0,
-   "avg_dealt": null,
-   "avg_taken": null,
-   "hour": "23:00",
-   "ts": 1794117600
-  },
-  {
-   "fights": 0,
-   "wins": 0,
-   "win_pct": 0,
-   "avg_dealt": null,
-   "avg_taken": null,
-   "hour": "00:00",
-   "ts": 1794121200
-  },
-  {
-   "fights": 0,
-   "wins": 0,
-   "win_pct": 0,
-   "avg_dealt": null,
-   "avg_taken": null,
-   "hour": "01:00",
-   "ts": 1794124800
-  },
-  {
-   "fights": 0,
-   "wins": 0,
-   "win_pct": 0,
-   "avg_dealt": null,
-   "avg_taken": null,
-   "hour": "02:00",
-   "ts": 1794128400
-  },
-  {
-   "fights": 0,
-   "wins": 0,
-   "win_pct": 0,
-   "avg_dealt": null,
-   "avg_taken": null,
-   "hour": "03:00",
-   "ts": 1794132000
-  },
-  {
-   "fights": 0,
-   "wins": 0,
-   "win_pct": 0,
-   "avg_dealt": null,
-   "avg_taken": null,
-   "hour": "04:00",
-   "ts": 1794135600
-  },
-  {
-   "fights": 0,
-   "wins": 0,
-   "win_pct": 0,
-   "avg_dealt": null,
-   "avg_taken": null,
-   "hour": "05:00",
-   "ts": 1794139200
-  },
-  {
-   "fights": 0,
-   "wins": 0,
-   "win_pct": 0,
-   "avg_dealt": null,
-   "avg_taken": null,
-   "hour": "06:00",
-   "ts": 1794142800
-  },
-  {
-   "fights": 0,
-   "wins": 0,
-   "win_pct": 0,
-   "avg_dealt": null,
-   "avg_taken": null,
-   "hour": "07:00",
-   "ts": 1794146400
-  },
-  {
-   "fights": 0,
-   "wins": 0,
-   "win_pct": 0,
-   "avg_dealt": null,
-   "avg_taken": null,
-   "hour": "08:00",
-   "ts": 1794150000
-  },
-  {
-   "fights": 0,
-   "wins": 0,
-   "win_pct": 0,
-   "avg_dealt": null,
-   "avg_taken": null,
-   "hour": "09:00",
-   "ts": 1794153600
-  },
-  {
-   "fights": 0,
-   "wins": 0,
-   "win_pct": 0,
-   "avg_dealt": null,
-   "avg_taken": null,
-   "hour": "10:00",
-   "ts": 1794157200
-  },
-  {
-   "fights": 0,
-   "wins": 0,
-   "win_pct": 0,
-   "avg_dealt": null,
-   "avg_taken": null,
-   "hour": "11:00",
-   "ts": 1794160800
-  },
-  {
-   "fights": 0,
-   "wins": 0,
-   "win_pct": 0,
-   "avg_dealt": null,
-   "avg_taken": null,
    "hour": "12:00",
    "ts": 1794164400
   },
@@ -569,13 +443,139 @@
    "ts": 1794193200
   },
   {
-   "fights": 296,
+   "fights": 0,
    "wins": 0,
    "win_pct": 0,
-   "avg_dealt": 0.779733926473057,
-   "avg_taken": 2.019284035588383,
+   "avg_dealt": null,
+   "avg_taken": null,
    "hour": "21:00",
    "ts": 1794196800
+  },
+  {
+   "fights": 493,
+   "wins": 1,
+   "win_pct": 0.2028397565922921,
+   "avg_dealt": 0.9774356519219383,
+   "avg_taken": 2.0655638567270986,
+   "hour": "22:00",
+   "ts": 1794200400
+  },
+  {
+   "fights": 494,
+   "wins": 4,
+   "win_pct": 0.8097165991902834,
+   "avg_dealt": 1.0968390876857697,
+   "avg_taken": 2.0778157769004446,
+   "hour": "23:00",
+   "ts": 1794204000
+  },
+  {
+   "fights": 0,
+   "wins": 0,
+   "win_pct": 0,
+   "avg_dealt": null,
+   "avg_taken": null,
+   "hour": "00:00",
+   "ts": 1794207600
+  },
+  {
+   "fights": 0,
+   "wins": 0,
+   "win_pct": 0,
+   "avg_dealt": null,
+   "avg_taken": null,
+   "hour": "01:00",
+   "ts": 1794211200
+  },
+  {
+   "fights": 0,
+   "wins": 0,
+   "win_pct": 0,
+   "avg_dealt": null,
+   "avg_taken": null,
+   "hour": "02:00",
+   "ts": 1794214800
+  },
+  {
+   "fights": 0,
+   "wins": 0,
+   "win_pct": 0,
+   "avg_dealt": null,
+   "avg_taken": null,
+   "hour": "03:00",
+   "ts": 1794218400
+  },
+  {
+   "fights": 0,
+   "wins": 0,
+   "win_pct": 0,
+   "avg_dealt": null,
+   "avg_taken": null,
+   "hour": "04:00",
+   "ts": 1794222000
+  },
+  {
+   "fights": 0,
+   "wins": 0,
+   "win_pct": 0,
+   "avg_dealt": null,
+   "avg_taken": null,
+   "hour": "05:00",
+   "ts": 1794225600
+  },
+  {
+   "fights": 6202,
+   "wins": 60,
+   "win_pct": 0.9674298613350532,
+   "avg_dealt": 1.1107246510342286,
+   "avg_taken": 2.0869595261796934,
+   "hour": "06:00",
+   "ts": 1794229200
+  },
+  {
+   "fights": 650,
+   "wins": 66,
+   "win_pct": 10.153846153846153,
+   "avg_dealt": 1.5249593884376493,
+   "avg_taken": 2.236550406115623,
+   "hour": "07:00",
+   "ts": 1794232800
+  },
+  {
+   "fights": 569,
+   "wins": 63,
+   "win_pct": 11.072056239015817,
+   "avg_dealt": 1.5382331430317981,
+   "avg_taken": 2.253086487135543,
+   "hour": "08:00",
+   "ts": 1794236400
+  },
+  {
+   "fights": 599,
+   "wins": 66,
+   "win_pct": 11.018363939899833,
+   "avg_dealt": 1.5196134343989467,
+   "avg_taken": 2.25458580035048,
+   "hour": "09:00",
+   "ts": 1794240000
+  },
+  {
+   "fights": 639,
+   "wins": 95,
+   "win_pct": 14.86697965571205,
+   "avg_dealt": 1.6875455632344794,
+   "avg_taken": 2.3042992253035117,
+   "hour": "10:00",
+   "ts": 1794243600
+  },
+  {
+   "fights": 316,
+   "wins": 53,
+   "win_pct": 16.772151898734176,
+   "avg_dealt": 1.6655593993238464,
+   "avg_taken": 2.24502712477396,
+   "hour": "11:00",
+   "ts": 1794247200
   }
  ]
 }
