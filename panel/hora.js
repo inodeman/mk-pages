@@ -89,11 +89,14 @@
     if (block.state !== "medido") {
       var note = "";
       if (block.reason) note += " " + block.reason + ".";
-      if (block.rejected_not_goro > 0) note += " Etapa 11 con guardia p2_ch=6 no es Goro.";
+      if (block.rejected_not_goro > 0) note += " p2_ch distinto de 7 no es Goro.";
       if (block.unvalidated > 0) note += " Hay etapa 11 sin rival validado.";
       return nodata("SIN VALIDAR") + (note ? ' <small class="mu">' + esc(note.trim()) + "</small>" : "");
     }
-    return pctCell(block, fresh);
+    var extra = "";
+    if (block.unvalidated > 0) extra += " Hay etapa 11 sin validar que no entra.";
+    if (block.rejected_not_goro > 0) extra += " p2_ch distinto de 7 no entra.";
+    return pctCell(block, fresh) + (extra ? ' <small class="mu">' + esc(extra.trim()) + "</small>" : "");
   }
 
   function when(iso) {
