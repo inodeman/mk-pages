@@ -1,7 +1,7 @@
 {
   "schema": "mk.panel.hora_sources.v1",
   "timezone_offset": "-07:00",
-  "clock_basis": "La hora es la columna time del fights.csv de la Box, reloj de ese learner. Este archivo no trae un fin distinto; si una fila trajera otra marca, se mostraría aparte y no sustituye a time.",
+  "clock_basis": "La hora de Mac y de Box es la columna time del fights.csv de la Box, la ingesta de ese learner. En los actores 40–47 puede ir unas 1–3 filas por detrás del reloj del CSV nativo de la Mac. Este archivo no trae otro fin.",
   "mapping_note": "Una sola fuente: el fights.csv de la Box. Actores 2–12 son la Box. Actores 40–47 son la ejecución Mac (nativo = id − 40), no un experimento. El CSV de la Mac (0–7) es la otra vista de esas mismas peleas y no se lee, para no sumarlas dos veces.",
   "epoch": {
     "id": "mac_rejoin_epoch_20261108_165350",

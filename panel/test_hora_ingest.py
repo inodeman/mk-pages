@@ -1,7 +1,10 @@
 """Unit fixtures only. Counts are synthetic and are not a measurement."""
 
+import base64
 import json
+import os
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -335,6 +338,96 @@ const ct = Buffer.from(payload.ct, 'base64');
             both = aggregate_sources(config, parse_time("2099-03-01T12:00:00-07:00"))
             self.assertEqual(both["mac"]["eval"]["summary_1_10"]["finished"], 1)
             self.assertEqual(both["mac"]["excluded"]["cross_source"], 1)
+
+    def test_publisher_e2e_encrypts_both_documents_from_a_fixture_csv(self):
+        from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+        from datetime import datetime, timedelta, timezone
+        juarez = timezone(timedelta(hours=-7))
+        now = datetime.now(juarez)
+        def stamp_row(minutes_ago):
+            return (now - timedelta(minutes=minutes_ago)).strftime("%Y-%m-%d %H:%M:%S")
+        epoch = (now - timedelta(minutes=40)).replace(microsecond=0).isoformat()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            box = root / "fights.csv"
+            mac = root / "mac.csv"
+            box.write_text(
+                "time,actor,role,stage,won,finished,rw,rl\n"
+                "%s,9,train,1,1,1,2,0\n"
+                "%s,9,eval,2,1,1,2,0\n"
+                "%s,40,eval,4,0,1,0,2\n"
+                "%s,43,train,11,0,1,0,2\n" % (stamp_row(50), stamp_row(20), stamp_row(15), stamp_row(10)),
+                encoding="utf-8",
+            )
+            mac.write_text(
+                "time,actor,role,stage,won,finished,rw,rl\n"
+                "%s,0,eval,4,1,1,2,0\n" % stamp_row(15),
+                encoding="utf-8",
+            )
+            sources = {
+                "timezone_offset": "-07:00",
+                "clock_basis": "SYNTHETIC fixture box ingest time",
+                "epoch": {"id": "fixture-epoch", "start": epoch},
+                "goro": {"validated": False, "reason": "p2_ch=6"},
+                "brain": {"sha256": "cd" * 32},
+                "synthetic_note": "SYNTHETIC",
+                "sources": [
+                    {
+                        "id": "box_fights", "path": str(box), "enabled": True, "confirmed": True, "priority": 1,
+                        "maps": [
+                            {"raw_from": 2, "raw_to": 12, "execution_machine": "box", "actor_offset": 0},
+                            {"raw_from": 40, "raw_to": 47, "execution_machine": "mac", "actor_offset": -40},
+                        ],
+                    },
+                    {
+                        "id": "mac_native_fights", "path": str(mac), "enabled": False, "confirmed": False, "priority": 2,
+                        "maps": [{"raw_from": 0, "raw_to": 7, "execution_machine": "mac", "actor_offset": 0}],
+                    },
+                ],
+            }
+            cfg = root / "sources.json"
+            cfg.write_text(json.dumps(sources), encoding="utf-8")
+            key = "ef" * 32
+            env = os.environ.copy()
+            env["MK_PANEL_KEY"] = key
+            result = subprocess.run(
+                [sys.executable, "panel/publish_hora.py", "--sources", str(cfg), "--write-dir", str(root)],
+                cwd=str(Path(".").resolve()),
+                env=env,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
+            written = sorted(p.relative_to(root).as_posix() for p in root.rglob("*") if p.is_file() and p.name.endswith(".enc.json"))
+            self.assertEqual(written, ["data/hora_box.enc.json", "data/hora_mac.enc.json"])
+            self.assertFalse((Path("data") / "hora_mac.enc.json").exists())
+            self.assertFalse((Path("data") / "hora_box.enc.json").exists())
+
+            def decrypt(name):
+                payload = json.loads((root / "data" / name).read_text(encoding="utf-8"))
+                self.assertEqual(payload["v"], 2)
+                plain = AESGCM(bytes.fromhex(key)).decrypt(base64.b64decode(payload["iv"]), base64.b64decode(payload["ct"]), None)
+                return json.loads(plain)
+
+            mac_doc = decrypt("hora_mac.enc.json")
+            box_doc = decrypt("hora_box.enc.json")
+            self.assertEqual(mac_doc["machine"], "mac")
+            self.assertEqual(box_doc["machine"], "box")
+            self.assertEqual(mac_doc["eval"]["summary_1_10"]["finished"], 1)
+            self.assertEqual(mac_doc["eval"]["summary_1_10"]["won"], 0)
+            self.assertEqual(mac_doc["goro"]["train"]["state"], "sin_validar")
+            self.assertIsNone(mac_doc["goro"]["train"]["pct"])
+            self.assertIsNone(mac_doc["goro"]["eval"]["pct"])
+            health = {row["actor_id"]: row["reporting"] for row in mac_doc["actors"]}
+            self.assertEqual(health[0], "ok")
+            self.assertEqual(health[1], "sin_reporte")
+            self.assertEqual(health[2], "sin_reporte")
+            self.assertEqual(box_doc["eval"]["summary_1_10"]["finished"], 1)
+            self.assertEqual(box_doc["excluded"]["before_epoch"], 1)
+            self.assertIsNone(box_doc["goro"]["train"]["pct"])
+            self.assertNotIn("0.0", json.dumps(mac_doc["goro"]))
+            self.assertTrue(mac_doc["clock_basis"])
 
     def test_old_panel_file_is_not_the_new_page(self):
         index = Path("index.html").read_text()

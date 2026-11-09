@@ -7,10 +7,12 @@
 Este repo ya se publica solo: los commits `estado …` y la marca `PUB_TS` de `index.html` los escribe el publicador que ya corre en la Box (en el código de las máquinas figura como `scorpion_pages.py`; ese programa no está en este repo). Ese trabajo, cada vez que va a cifrar y subir el panel, tiene que hacer antes:
 
 ```sh
-WRITE_DIR=/ruta/del/checkout/mk-pages \
+WRITE_DIR=/workspace/mk_pages_repo \
   MK_PANEL_KEY="$LA_CLAVE_QUE_YA_USA_EL_PANEL" \
-  /ruta/mk-pages/panel/box_publisher/run_hora.sh
+  /workspace/mk_pages_repo/panel/box_publisher/run_hora.sh
 ```
+
+Ese `WRITE_DIR` es el checkout que el operador confirmó. No está activado: falta este PR limpio y que el operador encienda el cron.
 
 `MK_PANEL_KEY` es la clave AES de 32 bytes en hex que el navegador guarda al entrar. No va en este paquete ni en la línea de comandos.
 
@@ -26,7 +28,7 @@ Si su lista de archivos es fija, hay que añadir esos dos nombres. Si hace `git 
 Un ejemplo de cron, distinto de los otros trabajos, cada 5 minutos:
 
 ```cron
-*/5 * * * * WRITE_DIR=/ruta/del/checkout/mk-pages /ruta/mk-pages/panel/box_publisher/run_hora.sh
+*/5 * * * * WRITE_DIR=/workspace/mk_pages_repo /workspace/mk_pages_repo/panel/box_publisher/run_hora.sh
 ```
 
 Ese cron solo deja los `.enc.json` en el checkout. Siguen sin verse en GitHub Pages hasta que el publicador de siempre los suba. Lo mismo vale para un timer de systemd: `ExecStart` es esa línea, sin `git`.

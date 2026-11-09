@@ -11,17 +11,22 @@ Sin --write-dir solo imprime un resumen, sin victorias.
 
 from __future__ import annotations
 
+import os
+import sys
+
+_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if _ROOT not in sys.path:
+    sys.path.insert(0, _ROOT)
+
 import argparse
 import base64
 import json
-import os
-import sys
 from datetime import datetime
 
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 from panel.hora_csv import aggregate_sources, load_sources
-from panel.hora_ingest import IngestError, build_hour, parse_machine, parse_time, summary
+from panel.hora_ingest import IngestError, build_hour, parse_machine, parse_time, summary, to_iso
 
 
 def encrypt_doc(doc, key_hex):
