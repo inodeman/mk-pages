@@ -396,7 +396,10 @@ const ct = Buffer.from(payload.ct, 'base64');
         self.assertEqual(saved["epoch"]["start"], "2026-11-08T16:55:00-07:00")
         self.assertEqual(saved["goro"]["windows"][0]["actors"], [1, 2, 3])
         self.assertEqual(saved["goro"]["windows"][0]["min_version"], 140325)
-        missing = aggregate_sources(saved, parse_time("2099-03-01T12:00:00-07:00"))
+        absent = json.loads(json.dumps(saved))
+        for source in absent["sources"]:
+            source["path"] = "/tmp/hora-fixture-missing/fights.csv"
+        missing = aggregate_sources(absent, parse_time("2099-03-01T12:00:00-07:00"))
         self.assertEqual(missing["mac"]["numbers"], "withheld")
         self.assertEqual(missing["box"]["goro"]["eval"]["state"], "sin_validar")
         self.assertIsNone(missing["mac"]["eval"]["summary_1_10"]["pct"])

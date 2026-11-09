@@ -21,7 +21,17 @@
         "machine": "mac",
         "actors": [1, 2, 3],
         "valid_from": "2026-11-08T17:55:57-07:00",
-        "min_version": 140325
+        "min_version": 140325,
+        "first_native_event_ids": {
+          "1": "43222c61710697d161ae053d",
+          "2": "4b83011d50b8662f7f8ce7b3",
+          "3": "20f1d5c8a51ca9ed4db164c6"
+        },
+        "first_ingest_event_ids": {
+          "1": "45f313233a9536556614780b",
+          "2": "2413b58bee50bbeff78530de",
+          "3": "189708f9a2bbd578a683a019"
+        }
       }
     ]
   },
