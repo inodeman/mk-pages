@@ -17,7 +17,7 @@ Mac y Box van en la misma página, en tablas distintas.
 - Sin peleas terminadas, sin archivo, sin época o con dato viejo: **Sin datos**, no 0 %.
 - Un 0 % solo aparece si hay terminadas y cero victorias.
 - Interrumpidas, cortes, inválidas y crashes no son derrotas.
-- La etapa 11 no entra al resumen 1–10. Goro cuenta solo en Mac actores 1–3 (ingesta 41–43) con versión de política >= 140325 y hora >= 2026-11-08T17:55:57-07:00, el primer CSV de esos actores con la guardia viva en p2_ch=7. No basta la hora desde la instalación 17:53:57. Sin versión, con versión anterior, con inicio de episodio anterior, en el eval 0 o en la Box, queda **SIN VALIDAR**. Un `p2_ch` explícito distinto de 7 se rechaza.
+- La etapa 11 no entra al resumen 1–10. Cada época de Goro tiene su propio inicio, su fin opcional y su propio rango de versión. La época verificada es Mac 1–3 desde 2026-11-08T17:55:57-07:00 con versión >= 140325. No es un piso eterno: una restauración a una versión menor no se rechaza como humana y no se cuenta hasta que haya otra época con corte evidenciado. Esa época no está en la configuración. Un `p2_ch` explícito distinto de 7 se rechaza. Sin coincidir con una época, queda **SIN VALIDAR**.
 - Las cifras quedan etiquetadas como detector. La página no certifica validación visual.
 - La hora de pantalla es UTC−7 fijo (America/Ciudad_Juarez), también en junio.
 

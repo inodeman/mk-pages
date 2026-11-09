@@ -190,21 +190,60 @@ def _ingest_clock(event):
     return None
 
 
-def _goro_window(cfg, machine, actor):
+def _epoch_list(cfg):
     if not isinstance(cfg, dict) or cfg.get("validated") is not True:
-        return None
-    for window in cfg.get("windows") or []:
-        if not isinstance(window, dict) or not window.get("valid_from"):
+        return []
+    raw = cfg.get("epochs")
+    if raw is None:
+        raw = cfg.get("windows") or []
+    return [item for item in raw if isinstance(item, dict) and item.get("valid_from")]
+
+
+def _epoch_has_actor(epoch, machine, actor):
+    if epoch.get("machine") not in (None, machine):
+        return False
+    if epoch.get("actor_id") is not None and int(epoch["actor_id"]) != actor:
+        return False
+    actors = epoch.get("actors")
+    if actors is not None and actor not in actors and str(actor) not in {str(item) for item in actors}:
+        return False
+    return True
+
+
+def _epoch_covers(epoch, when):
+    if when is None:
+        return False
+    if when < parse_time(epoch["valid_from"]):
+        return False
+    until = epoch.get("valid_until")
+    if until and when >= parse_time(until):
+        return False
+    return True
+
+
+def _version_matches_epoch(version, epoch):
+    """Bounds belong to this epoch only. A lower version is not a global failure."""
+    floor = epoch.get("version_min", epoch.get("min_version"))
+    ceiling = epoch.get("version_max")
+    if floor is None and ceiling is None:
+        return True
+    if not isinstance(version, int):
+        return False
+    if floor is not None and version < int(floor):
+        return False
+    if ceiling is not None and version > int(ceiling):
+        return False
+    return True
+
+
+def _epoch_for(cfg, machine, actor, when):
+    found = None
+    for epoch in _epoch_list(cfg):
+        if not _epoch_has_actor(epoch, machine, actor) or not _epoch_covers(epoch, when):
             continue
-        if window.get("machine") not in (None, machine):
-            continue
-        if window.get("actor_id") is not None and int(window["actor_id"]) != actor:
-            continue
-        actors = window.get("actors")
-        if actors is not None and actor not in actors and str(actor) not in {str(item) for item in actors}:
-            continue
-        return window
-    return None
+        if found is None or parse_time(epoch["valid_from"]) >= parse_time(found["valid_from"]):
+            found = epoch
+    return found
 
 
 def _policy_version(event):
@@ -229,21 +268,14 @@ def _classify_goro(event, machine, actor, cfg):
     p2 = _p2_ch(event)
     if p2 is False or (p2 is not None and p2 != 7):
         return "reject"
-    window = _goro_window(cfg, machine, actor)
-    if window is None:
-        return "unvalidated"
-    version = _policy_version(event)
-    floor = window.get("min_version")
-    if floor is not None and (not isinstance(version, int) or version < int(floor)):
-        return "unvalidated"
     start = _episode_start(event)
-    valid_from = parse_time(window["valid_from"])
-    if start is not None:
-        return "count" if start >= valid_from else "unvalidated"
-    if floor is None:
+    when = start if start is not None else _ingest_clock(event)
+    epoch = _epoch_for(cfg, machine, actor, when)
+    if epoch is None:
         return "unvalidated"
-    ingest = _ingest_clock(event)
-    if ingest is None or ingest < valid_from:
+    if not _version_matches_epoch(_policy_version(event), epoch):
+        return "unvalidated"
+    if start is None and epoch.get("version_min", epoch.get("min_version")) is None and epoch.get("version_max") is None:
         return "unvalidated"
     return "count"
 
