@@ -1,0 +1,42 @@
+{
+  "schema": "mk.panel.hora_sources.v1",
+  "timezone_offset": "-07:00",
+  "clock_basis": "La hora es la columna time del fights.csv de la Box, reloj de ese learner. Este archivo no trae un fin distinto; si una fila trajera otra marca, se mostraría aparte y no sustituye a time.",
+  "mapping_note": "Una sola fuente: el fights.csv de la Box. Actores 2–12 son la Box. Actores 40–47 son la ejecución Mac (nativo = id − 40), no un experimento. El CSV de la Mac (0–7) es la otra vista de esas mismas peleas y no se lee, para no sumarlas dos veces.",
+  "epoch": {
+    "id": "mac_rejoin_epoch_20261108_165350",
+    "start": "2026-11-08T16:55:00-07:00"
+  },
+  "brain": {
+    "sha256": "c0ef956f935e69bae83a997d32190d11c8572affdba86c4b3814facde249baec"
+  },
+  "goro": {
+    "validated": false,
+    "reason": "p2_ch=6"
+  },
+  "sources": [
+    {
+      "id": "box_fights",
+      "path": "/workspace/mk2/brains/Scorpion1/proj/runs/scorpion/fights.csv",
+      "priority": 1,
+      "enabled": true,
+      "confirmed": true,
+      "note": "Fuente única del panel.",
+      "maps": [
+        {"raw_from": 2, "raw_to": 12, "execution_machine": "box", "actor_offset": 0},
+        {"raw_from": 40, "raw_to": 47, "execution_machine": "mac", "actor_offset": -40}
+      ]
+    },
+    {
+      "id": "mac_native_fights",
+      "path": "/Users/inodeman/mk2/scorpion/runs/standalone/fights.csv",
+      "priority": 2,
+      "enabled": false,
+      "confirmed": false,
+      "note": "Los actores 0–7 sí lo escriben, aunque el learner de la Mac esté detenido. No se lee: es la misma ejecución Mac que 40–47.",
+      "maps": [
+        {"raw_from": 0, "raw_to": 7, "execution_machine": "mac", "actor_offset": 0}
+      ]
+    }
+  ]
+}
