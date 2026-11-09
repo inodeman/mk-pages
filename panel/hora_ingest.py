@@ -275,7 +275,10 @@ def _classify_goro(event, machine, actor, cfg):
         return "unvalidated"
     if not _version_matches_epoch(_policy_version(event), epoch):
         return "unvalidated"
-    if start is None and epoch.get("version_min", epoch.get("min_version")) is None and epoch.get("version_max") is None:
+    need = epoch.get("require_p2_ch")
+    if need is not None and p2 != int(need):
+        return "unvalidated"
+    if start is None and epoch.get("version_min", epoch.get("min_version")) is None and epoch.get("version_max") is None and need is None:
         return "unvalidated"
     return "count"
 
@@ -458,6 +461,7 @@ def build_hour(doc):
         "before_epoch": 0,
         "outside_window": 0,
         "other_brain": 0,
+        "other_lineage": 0,
         "unknown_role": 0,
         "rejected": 0,
         "missing_id": 0,
@@ -538,6 +542,12 @@ def build_hour(doc):
         if epoch is None:
             excluded["missing_epoch"] += 1
             continue
+        lineage_floor = doc.get("live_version_min")
+        if lineage_floor is not None:
+            lineage = _policy_version(event)
+            if not isinstance(lineage, int) or lineage < int(lineage_floor):
+                excluded["other_lineage"] += 1
+                continue
         if clock < start or clock > as_of:
             excluded["outside_window"] += 1
             continue
@@ -604,6 +614,8 @@ def build_hour(doc):
         "brain": {
             "epoch_id": doc.get("epoch_id"),
             "epoch_start": to_iso(epoch),
+            "live_version_min": int(doc["live_version_min"]) if doc.get("live_version_min") is not None else None,
+            "source_snapshot_version": doc.get("source_snapshot_version"),
             "sha256": envelope_sha,
             "sha16": envelope_sha[:16] if envelope_sha else None,
         },

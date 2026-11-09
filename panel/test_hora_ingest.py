@@ -179,8 +179,10 @@ class HourIngestTest(unittest.TestCase):
         self.assertEqual(saved["goro"]["epochs"][0]["actors"], [1, 2, 3])
         self.assertEqual(saved["goro"]["epochs"][0]["min_version"], 140325)
         self.assertEqual(saved["goro"]["epochs"][0]["valid_from"], "2026-11-08T17:55:57-07:00")
-        self.assertIsNone(saved["goro"]["epochs"][0].get("valid_until"))
-        self.assertNotIn("129320", json.dumps(saved["goro"]["epochs"]))
+        self.assertEqual(saved["goro"]["epochs"][0]["valid_until"], "2026-11-08T18:15:00-07:00")
+        self.assertEqual(saved["goro"]["epochs"][1]["require_p2_ch"], 7)
+        self.assertEqual(saved["epoch"]["live_version_min"], 140805)
+        self.assertEqual(saved["epoch"]["source_snapshot_version"], 129320)
 
     def test_verified_cohort_counts_only_versioned_rows_after_first_real(self):
         cfg = json.loads(Path("panel/hora_sources.json").read_text(encoding="utf-8"))["goro"]
@@ -259,6 +261,37 @@ class HourIngestTest(unittest.TestCase):
             {"event_id": "new-line", "machine": "mac", "actor_id": 2, "role": "train", "clock": "2026-11-08T19:10:00-07:00", "stage": 11, "status": "finished", "won": 1, "rw": 2, "rl": 0, "version": 129320},
         ]))
         self.assertEqual((opened_late["goro"]["train"]["won"], opened_late["goro"]["train"]["finished"]), (1, 1))
+
+    def test_restored_lineage_does_not_include_the_previous_one(self):
+        cfg = json.loads(Path("panel/hora_sources.json").read_text(encoding="utf-8"))
+        doc = build_hour({
+            "machine": "mac",
+            "as_of": "2026-11-08T18:40:00-07:00",
+            "generated_at": "2026-11-08T18:40:00-07:00",
+            "brain_epoch_start": cfg["epoch"]["start"],
+            "epoch_id": cfg["epoch"]["id"],
+            "live_version_min": cfg["epoch"]["live_version_min"],
+            "brain_sha256": cfg["brain"]["sha256"],
+            "goro": cfg["goro"],
+            "source": {"connected": True, "path_label": "SYNTHETIC"},
+            "events": [
+                {"event_id": "pre", "machine": "mac", "actor_id": 4, "role": "train", "clock": "2026-11-08T18:10:00-07:00", "stage": 3, "status": "finished", "won": 1, "rw": 2, "rl": 0, "version": 140700},
+                {"event_id": "late-old", "machine": "mac", "actor_id": 4, "role": "train", "clock": "2026-11-08T18:20:00-07:00", "stage": 3, "status": "finished", "won": 0, "rw": 0, "rl": 2, "version": 140400},
+                {"event_id": "new-loss", "machine": "mac", "actor_id": 5, "role": "train", "clock": "2026-11-08T18:20:00-07:00", "stage": 3, "status": "finished", "won": 0, "rw": 0, "rl": 2, "version": 140805},
+                {"event_id": "goro-unknown", "machine": "mac", "actor_id": 1, "role": "train", "clock": "2026-11-08T18:21:00-07:00", "stage": 11, "status": "finished", "won": 1, "rw": 2, "rl": 0, "version": 140806},
+                {"event_id": "goro-proved", "machine": "mac", "actor_id": 2, "role": "train", "clock": "2026-11-08T18:22:00-07:00", "stage": 11, "status": "finished", "won": 0, "rw": 0, "rl": 2, "version": 140807, "p2_ch": 7},
+                {"event_id": "goro-human", "machine": "mac", "actor_id": 3, "role": "train", "clock": "2026-11-08T18:23:00-07:00", "stage": 11, "status": "finished", "won": 0, "rw": 0, "rl": 2, "version": 140808, "p2_ch": 6},
+            ],
+        })
+        self.assertEqual(doc["brain"]["epoch_id"], "scorpio10_2.5good_restore_t6177u_20261108_181449")
+        self.assertEqual(doc["train"]["summary_1_10"]["finished"], 1)
+        self.assertEqual(doc["train"]["summary_1_10"]["won"], 0)
+        self.assertEqual(doc["excluded"]["before_epoch"], 1)
+        self.assertEqual(doc["excluded"]["other_lineage"], 1)
+        self.assertEqual(doc["goro"]["train"]["finished"], 1)
+        self.assertEqual(doc["goro"]["train"]["won"], 0)
+        self.assertEqual(doc["goro"]["train"]["unvalidated"], 1)
+        self.assertEqual(doc["goro"]["train"]["rejected_not_goro"], 1)
 
     def test_epoch_window_and_brain_filters(self):
         doc = build_hour(envelope(events=[
@@ -432,7 +465,8 @@ const ct = Buffer.from(payload.ct, 'base64');
         active = [item for item in saved["sources"] if item.get("enabled")]
         self.assertEqual([item["id"] for item in active], ["box_fights"])
         self.assertTrue(active[0]["path"].endswith("runs/scorpion/fights.csv"))
-        self.assertEqual(saved["epoch"]["start"], "2026-11-08T16:55:00-07:00")
+        self.assertEqual(saved["epoch"]["start"], "2026-11-08T18:15:00-07:00")
+        self.assertEqual(saved["epoch"]["live_version_min"], 140805)
         self.assertEqual(saved["goro"]["epochs"][0]["actors"], [1, 2, 3])
         self.assertEqual(saved["goro"]["epochs"][0]["min_version"], 140325)
         absent = json.loads(json.dumps(saved))

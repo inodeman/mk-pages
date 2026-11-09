@@ -271,6 +271,8 @@ def aggregate_sources(config, now=None):
                 "generated_at": to_iso(as_of),
                 "brain_epoch_start": epoch.get("start"),
                 "epoch_id": epoch.get("id"),
+                "live_version_min": epoch.get("live_version_min"),
+                "source_snapshot_version": epoch.get("source_snapshot_version"),
                 "brain_sha256": brain.get("sha256"),
                 "goro": goro,
                 "goro_validated": goro.get("validated", False),

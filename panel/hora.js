@@ -114,6 +114,7 @@
     if (ex.wrong_machine) parts.push(ex.wrong_machine + " de la otra máquina");
     if (ex.before_epoch) parts.push(ex.before_epoch + " anteriores a la época");
     if (ex.other_brain) parts.push(ex.other_brain + " de otro cerebro");
+    if (ex.other_lineage) parts.push(ex.other_lineage + " de un linaje anterior, no son este resultado");
     if (ex.outside_window) parts.push(ex.outside_window + " fuera de la hora");
     if (ex.duplicate) parts.push(ex.duplicate + " duplicados");
     if (ex.unknown_role) parts.push(ex.unknown_role + " sin rol");
@@ -177,7 +178,7 @@
       "<p>Última pelea: " + last + "</p>" +
       "<p>Actualización: " + when(doc.generated_at) + "</p>" +
       "<p>Ventana: " + when(doc.window && doc.window.start) + " → " + when(doc.window && doc.window.end) + "</p>" +
-      "<p>Época del cerebro: " + when(brain.epoch_start) + "</p>" +
+      "<p>Época del cerebro: " + (brain.epoch_id ? esc(brain.epoch_id) + " · " : "") + when(brain.epoch_start) + (brain.live_version_min != null ? " · versión viva &gt;= " + esc(brain.live_version_min) : "") + "</p>" +
       "<p>SHA: " + (brain.sha16 ? "<code>" + esc(brain.sha16) + "</code>" : nodata("Sin datos")) + "</p>" +
       "<p>Detector: " + esc(doc.detector || "Sin datos") + ". Esta página no certifica validación visual.</p>" +
       (doc.clock_basis ? "<p class=\"mu\">" + esc(doc.clock_basis) + "</p>" : "") +
