@@ -509,7 +509,40 @@ img{max-width:100%;border-radius:8px}.kpi{display:flex;flex-wrap:wrap;gap:.6rem;
 
 
 
-<!--PUBTS--><script>window.PUB_TS=1794249519;</script><!--/PUBTS-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--PUBTS--><script>window.PUB_TS=1794268553;</script><!--/PUBTS-->
 <div id="uptime_bar" role="status" style="background:#2a2f38;color:#c9d1dc;font:600 15px system-ui,sans-serif;padding:.6rem 1rem;border-bottom:2px solid #3a4250;text-align:center">Comprobando estado de la computadora…</div>
 <script>
 /* 2026-11-03 indicador «Box apagada / sin enviar info»: PUB_TS = epoch de la ultima publicacion (lo escribe scorpion_pages.py en cada push); compara con la hora actual del navegador. Hora de Monterrey. */
@@ -887,12 +920,12 @@ async function purg(){for(const [k,i] of [['box','b_pg_box'],['mac','b_pg_mac']]
  try{const d=await J('data/purge.json');for(const k of ['box','mac']){const r=d[k],el=$('pg_'+k);if(!r){el.innerHTML='<small class="mu">sin purgas aún</small>';continue}
  el.innerHTML='<small>'+(r.dry?'<b>SIMULACRO</b> (no borró) · ':'')+esc(r.updated)+'</small><br>Archivos purgados: <b>'+r.purgados+'</b> · GB liberados: <b>'+r.gb_liberados+'</b><br>Escaneados: '+r.escaneados+' · omitidos: <b>'+r.omitidos+'</b>'+(r.motivos?'<br><small>'+Object.entries(r.motivos).map(([a,b])=>b+'× '+esc(a)).join('<br>')+'</small>':'')+'<br>Espacio libre ahora: <b>'+r.libre_gb+' GB</b>'+((r.muestra_purgados||[]).length?'<details><summary>purgados</summary><small>'+r.muestra_purgados.map(x=>esc(x.f.slice(-60))+' · '+x.mb+' MB · <a style="color:var(--ac)" target="_blank" href="https://youtu.be/'+esc(x.vid)+'">'+esc(x.vid)+'</a>').join('<br>')+'</small></details>':'')+((r.muestra_omitidos||[]).length?'<details><summary>omitidos (muestra)</summary><small>'+r.muestra_omitidos.map(x=>esc(x.f)+' · '+x.mb+' MB · '+esc(x.why)).join('<br>')+'</small></details>':'')}}catch(e){for(const k of ['box','mac'])$('pg_'+k).innerHTML='<small class="mu">sin purgas aún</small>'}}
 async function scStates(){let d;try{d=await J('data/state_guard.json')}catch(e){$('sc_st_m').textContent='sin datos del guardia aún';return}const ago=d.ts?Math.max(0,Math.round((Date.now()/1000-d.ts)/60)):NaN;$('sc_st_m').innerHTML=(d.ok?'✅ ':'⚠️ ')+esc(d.msg)+' · revisado '+esc(d.updated)+' (hora de Ciudad Juárez'+(isNaN(ago)?'':', hace '+ago+' min')+') · cada '+Math.round((d.interval_s||180)/60)+' min, sin tokens'+(d.ffmpeg_box?' · ffmpeg Box: '+esc(d.ffmpeg_box):'')+((d.heals||[]).length?' · autoreparado: '+d.heals.map(h=>'nivel '+h.level+' '+(h.ok?'✅ '+esc(h.how):'❌ '+esc(h.how))).join('; '):'');$('sc_st_t').innerHTML='<tr><th>Nivel</th><th>Estado</th><th>Carga real</th><th>Box</th><th>Mac (pack)</th><th>Origen</th><th>Versión</th></tr>'+d.levels.map(l=>'<tr><td>'+l.level+'</td><td>'+(l.ok?'✅ ok':'❌ '+esc((l.problems||[]).join('; ')))+'</td><td>'+(l.load===true?'✅':l.load===false?'❌':'—')+'</td><td>'+(l.ok?'✅':'❌')+'</td><td>'+(l.mac?(l.stale?'⏳ se actualiza':'✅'):'❌')+'</td><td>'+esc(l.src||'—')+'</td><td><code>'+esc(l.sha||'—')+'</code></td></tr>').join('')}
-async function scOrders(){let d;try{d=await J('data/scorpion_orders.json')}catch(e){d={orders:[],updated:'—'}}try{const r=await fetch('https://api.github.com/repos/inodeman/mk-stats/issues?state=open&per_page=50&t='+Date.now(),{cache:'no-store'});if(r.ok){const have=new Set(d.orders.map(o=>o.issue));const P=(b,k)=>((b||'').match(new RegExp(k+'=\\s*([\\w,]+)'))||[])[1]||'';(await r.json()).filter(i=>!i.pull_request&&/^order scorpion$/i.test((i.title||'').trim())&&i.user&&i.user.login==='inodeman'&&!have.has(i.number)).forEach(i=>{const b=i.body||'',m=P(b,'mode'),lv=P(b,'level');d.orders.unshift({id:'issue #'+i.number,issue:i.number,desc:m==='select_until_lose'?'Empieza en el nivel '+(lv||1)+' hasta que pierda':(m==='from_level'?'Desde el nivel '+lv+' hasta que pierda':'Solo el nivel '+lv),machine:(P(b,'machine')||'box').toUpperCase(),nets:(P(b,'nets')||'yt').split(',').map(x=>({yt:'YouTube',fb:'Facebook',tt:'TikTok'}[x]||x)),qty:+(P(b,'qty')||1),done:0,status:'recibido',takes:[],created:new Date(i.created_at).toLocaleString('es-MX',{timeZone:'America/Ciudad_Juarez',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})})})}}catch(e){}if(!d.orders.length)throw 0;try{const ST={recibido:['Recibido (el box lo registra en ≤1 min)','r'],queued:['En cola','r'],waiting_machine:['Esperando a la máquina','r'],recording:['Grabando',''],rendering:['Renderizando',''],publishing:['Publicando',''],published:['Publicado ✓','g'],failed:['Falló','r'],partial:['Parcial','r'],cancelled:['Cancelado','r']};
+async function scOrders(){let d;try{d=await J('data/scorpion_orders.json')}catch(e){d={orders:[],updated:'—'}}try{const r=await fetch('https://api.github.com/repos/inodeman/mk-stats/issues?state=open&per_page=50&t='+Date.now(),{cache:'no-store'});if(r.ok){const have=new Set(d.orders.map(o=>o.issue));const P=(b,k)=>((b||'').match(new RegExp(k+'=\\s*([\\w,]+)'))||[])[1]||'';(await r.json()).filter(i=>!i.pull_request&&/^order scorpion$/i.test((i.title||'').trim())&&i.user&&i.user.login==='inodeman'&&!have.has(i.number)).forEach(i=>{const b=i.body||'',m=P(b,'mode'),lv=P(b,'level');d.orders.unshift({id:'issue #'+i.number,issue:i.number,desc:m==='select_until_lose'?'Empieza en el nivel '+(lv||1)+' hasta que pierda':(m==='from_level'?'Desde el nivel '+lv+' hasta que pierda':'Solo el nivel '+lv),machine:(P(b,'machine')||'box').toUpperCase(),nets:(P(b,'nets')||'yt').split(',').map(x=>({yt:'YouTube',fb:'Facebook',tt:'TikTok'}[x]||x)),qty:+(P(b,'qty')||1),done:0,status:'recibido',takes:[],created:new Date(i.created_at).toLocaleString('es-MX',{timeZone:'America/Ciudad_Juarez',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})})})}}catch(e){}try{const n='srv_orders.enc.json',rf=[...n].map(c=>Math.random()<.5?'%'+c.charCodeAt(0).toString(16).toUpperCase().padStart(2,'0'):c).join('');const r=await fetch('https://raw.githubusercontent.com/inodeman/mk-pages/srv/'+rf+'?t='+Date.now(),{cache:'no-store'});if(r.ok){const x=await dec(await r.json(),KEY);d.orders=(x.orders||[]).concat(d.orders)}}catch(e){}if(!d.orders.length)throw 0;try{const ST={srv_done:['Grabado ✓ (Gofile; falta publicar en redes)','g'],recibido:['Recibido (el box lo registra en ≤1 min)','r'],queued:['En cola','r'],waiting_machine:['Esperando a la máquina','r'],recording:['Grabando',''],rendering:['Renderizando',''],publishing:['Publicando',''],published:['Publicado ✓','g'],failed:['Falló','r'],partial:['Parcial','r'],cancelled:['Cancelado','r']};
  const lk=(u,t)=>/^https:\/\//.test(u||'')?'<a href="'+esc(u)+'" target="_blank" rel="noopener">'+t+'</a>':'';
  $('sc_ord_m').textContent='Actualizado '+d.updated+' · '+d.orders.length+' pedido(s) · paso en vivo con la hora de cada paso · los enlaces aparecen cuando el video queda publicado';
  $('sc_ord_t').innerHTML='<tr><th>Pedido</th><th>Qué</th><th>Máquina</th><th>Redes</th><th>Estado</th><th>Detalle</th><th>Enlaces</th></tr>'+d.orders.map(o=>{const s=ST[o.status]||[o.status,''];
   const tk=(o.takes||[]).map(t=>{const hs=(t.steps||[]).map((x,i,a)=>'<small class="'+(x.k==='error'?'r':(i===a.length-1?'g':'mu'))+'">'+(i===a.length-1&&x.k!=='done'?'▶ ':'✓ ')+esc(x.at)+' · '+esc(x.label)+'</small>').join('<br>');return '<small>#'+t.n+' <b>'+esc(t.step||(ST[t.state]||[t.state])[0])+'</b>'+(t.step_at?' <span class="mu">desde '+esc(t.step_at)+'</span>':'')+'</small><br>'+(hs||('<small>'+esc(t.msg||'')+'</small>'))}).join('<hr>');
-  const ln=(o.takes||[]).map(t=>[lk(t.yt,'YouTube'),lk(t.fb,'Facebook')].filter(Boolean).join(' · ')).filter(Boolean).join('<br>');
+  const ln=(o.takes||[]).map(t=>[lk(t.yt,'YouTube'),lk(t.fb,'Facebook'),lk(t.gofile,'Gofile')].filter(Boolean).join(' · ')).filter(Boolean).join('<br>');
   return '<tr><td><b>'+esc(o.id)+'</b><br><small class="mu">issue #'+o.issue+' · '+esc(o.created)+'</small></td><td>'+esc(o.desc)+'</td><td>'+esc(o.machine)+'</td><td>'+esc((o.nets||[]).join(', '))+'</td><td><b class="'+s[1]+'">'+esc(((o.takes||[])[0]||{}).step||s[0])+'</b><br><small>'+o.done+'/'+o.qty+' publicado(s)</small>'+(/^sc\d+$/.test(o.id||'')&&['recibido','queued','waiting_machine','recording','rendering'].includes(o.status)?'<br><a class="btn r" style="margin-top:.3rem" target="_blank" rel="noopener" href="'+esc(iss('cancel scorpion','order='+o.id))+'" onclick="return confirm(\'¿Cancelar el pedido '+esc(o.id)+'? Se abrirá un issue; el box lo detiene en ≤1 min.\')">Cancelar</a>':'')+'</td><td>'+tk+'</td><td>'+(ln||'—')+'</td></tr>'}).join('')}catch(e){$('sc_ord_m').textContent='sin datos de pedidos todavía'}}
 async function subida(){const el=$('up_tab');if(!el)return;try{const d=await J('data/upload_ready.json');window._UP=d;const t=d.total||{};
  $('up_meta').innerHTML='<small>'+esc(d.note||'')+'</small>';
