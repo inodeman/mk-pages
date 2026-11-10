@@ -805,8 +805,8 @@ function pgH1(d){try{const H=d.h1;if(!H){$('pg_h1').innerHTML='<span class="mu">
  const pe=(w,n)=>n?'<b>'+(100*w/n).toFixed(0)+'%</b> <small class="mu">'+w+'/'+n+'</small>':'<span class="mu">—</span>',S=H.spec;
  const fh=t=>t?t.slice(11,16):'';
  $('pg_meta').innerHTML='Datos '+esc(d.updated)+' (hora Ciudad Juárez = MST, UTC-7; Monterrey = +1 h) · <b>SOLO última hora móvil (60 min)</b> · conteo reiniciado cuando el Scorpio10-2 restaurado empezó a pelear: <b>'+esc(H.since_box)+' MST = '+esc(H.since_mty)+' Monterrey</b> · ventana actual: <b>'+esc(fh(H.window_from_box))+'→ahora MST ('+esc(fh(H.window_from_mty))+' Monterrey), '+H.minutes+' min'+(H.full_hour?'':' (aún menos de 60 min desde el reinicio)')+'</b>';
- let h='<h4>Peleas 1 a 10 y Goro (11) · últimos 60 min (EVAL = principal, greedy; entrenamiento = secundario)</h4><table><tr><th>Pelea</th><th>EVAL últ. 60 min (n)</th><th class="mu">Entreno últ. 60 min (n)</th></tr>';
- Object.keys(H.win).sort((a,b)=>a-b).forEach(k=>{const o=H.win[k];h+='<tr><td><b>'+(k=='11'?'11 · Goro':k)+'</b></td><td>'+pe(o.eval.w,o.eval.n)+'</td><td class="mu">'+pe(o.train.w,o.train.n)+'</td></tr>'});
+ let h='<h4>Peleas 1 a 10 y Goro (11) · últimos 60 min (EVAL = principal, greedy; entrenamiento = secundario)</h4><table><tr><th>Pelea</th><th>EVAL últ. 60 min (n)</th><th class="mu">Entreno últ. 60 min (n)</th><th>Uppercuts fallados por pelea<br><small class="mu">EVAL · entreno (conectados)</small></th></tr>';
+ Object.keys(H.win).sort((a,b)=>a-b).forEach(k=>{const o=H.win[k];const uc=x=>x.n?'<b>'+((x.ucw||0)/x.n).toFixed(1)+'</b>':'<span class="mu">—</span>';h+='<tr><td><b>'+(k=='11'?'11 · Goro':k)+'</b></td><td>'+pe(o.eval.w,o.eval.n)+'</td><td class="mu">'+pe(o.train.w,o.train.n)+'</td><td>'+uc(o.eval)+' · '+uc(o.train)+(o.train.n?' <small class="mu">('+((o.train.uch||0)/o.train.n).toFixed(1)+' conectados)</small>':'')+'</td></tr>'});
  const SE=H.spec_eval||S,ST=H.spec_train||{};
  const ucCell=(X,train)=>{const n=X.uc_n||0; if(!train) return pe(X.uc_ok||0,n)+' <small class="mu">solo política</small>';
   const pr=X.uc_ok_propio||0, fz=X.uc_ok_forced||0, um=X.uc_ok_unmarked||0;
