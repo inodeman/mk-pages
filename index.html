@@ -66,29 +66,7 @@ img{max-width:100%;border-radius:8px}.kpi{display:flex;flex-wrap:wrap;gap:.6rem;
   all(); setInterval(all,60000);
 })();
 </script>
-<div id="goro_box" style="max-width:1100px;margin:.6rem auto;padding:.7rem 1rem;background:#171c24;border:1px solid #2a313c;border-radius:12px;color:#e6e9ee;font:14px system-ui,sans-serif">
-<b>Scorpion vs Goro (eval, Mac)</b> <small id="goro_upd" style="color:#8b95a5"></small>
-<div id="goro_kpi" style="display:flex;flex-wrap:wrap;gap:1rem;margin:.4rem 0">Cargando…</div>
-<svg id="goro_svg" viewBox="0 0 600 140" style="width:100%;height:140px;background:#12171e;border-radius:8px"></svg>
-<small style="color:#8b95a5">Línea roja: % de victorias contra Goro por hora (24 h). Barras grises: peleas por hora.</small>
-</div>
-<script>
-(function(){
- function draw(d){
-  var k=document.getElementById('goro_kpi'),t=d.total||{};
-  k.innerHTML='<span>Peleas: <b>'+(t.fights||0)+'</b></span><span>Victorias: <b>'+(t.wins||0)+'</b></span><span>% victorias: <b>'+(t.win_pct==null?'-':t.win_pct.toFixed(1)+'%')+'</b></span><span>Daño hecho prom.: <b>'+(t.avg_dealt==null?'-':t.avg_dealt.toFixed(2))+'</b></span><span>Daño recibido prom.: <b>'+(t.avg_taken==null?'-':t.avg_taken.toFixed(2))+'</b></span>';
-  document.getElementById('goro_upd').textContent=d.updated?('actualizado '+d.updated):'';
-  var h=d.hourly||[],svg=document.getElementById('goro_svg'),W=600,H=140,n=Math.max(h.length,1),mx=1,o='';
-  h.forEach(function(b){if(b.fights>mx)mx=b.fights});
-  h.forEach(function(b,i){var bw=W/n,bh=(b.fights/mx)*(H-20);o+='<rect x="'+(i*bw+1)+'" y="'+(H-bh)+'" width="'+(bw-2)+'" height="'+bh+'" fill="#2a313c"/>'});
-  var pts=[];h.forEach(function(b,i){if(b.fights>0)pts.push(((i+.5)*W/n)+','+(H-(b.win_pct/100)*(H-20)))});
-  if(pts.length)o+='<polyline fill="none" stroke="#ff5252" stroke-width="2" points="'+pts.join(' ')+'"/>';
-  svg.innerHTML=o;
- }
- function load(){fetch('data/goro_stats.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json()}).then(draw).catch(function(){document.getElementById('goro_kpi').textContent='Sin datos de Goro todavía'})}
- load();setInterval(load,60000);
-})();
-</script>
+
 <!--/MACHSTATUS-->
 
 
