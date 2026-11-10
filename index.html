@@ -570,7 +570,7 @@ img{max-width:100%;border-radius:8px}.kpi{display:flex;flex-wrap:wrap;gap:.6rem;
 </script>
 
 <header><h1>🕹️ Panel <small id="stamp"></small> <button class="btn b hide" id="b_out" onclick="lock()" style="float:right">Cerrar sesión</button></h1>
-<nav id="nav" class="hide"><a href="#imgs">Imágenes por máquina</a><a href="#pedir-scorpion">Pedir pelea Scorpion</a><a href="#progreso">📈 Progreso</a><a href="#scorpion">Scorpion</a> <a href="#hora">% por hora</a><a href="#grafica">Gráfica</a><a href="#subida">Listos para subir</a><a href="#videos">Videos hoy</a><a href="#carga">Carga</a><a href="#musica">Pedir música inodeAI</a><a href="#ordenes">Ordenar videos</a><a href="#imagenes">Imágenes</a><a href="#earnings">Earnings</a><a href="#viz">Visualizaciones</a></nav></header>
+<nav id="nav" class="hide"><a href="#imgs">Imágenes por máquina</a><a href="#pedir-scorpion">Pedir pelea Scorpion</a><a href="#progreso">📈 Progreso</a><a href="#scorpion">Scorpion</a> <a href="#grafica">Gráfica</a><a href="#subida">Listos para subir</a><a href="#videos">Videos hoy</a><a href="#carga">Carga</a><a href="#musica">Pedir música inodeAI</a><a href="#ordenes">Ordenar videos</a><a href="#imagenes">Imágenes</a><a href="#earnings">Earnings</a><a href="#viz">Visualizaciones</a></nav></header>
 <main>
 <section class="card" id="lockscr"><h2>🔒 Panel privado</h2><p class="mu">Todo el contenido está cifrado. Escribe la contraseña una sola vez: este dispositivo la recordará hasta que pulses «Cerrar sesión».</p><div class="lock"><input id="pw" type="password" placeholder="contraseña" autocomplete="current-password" onkeydown="if(event.key==='Enter')unlock()"> <button class="btn b" onclick="unlock()">Entrar</button><div id="pwmsg" class="mu"></div></div></section>
 <div id="all" class="hide">
@@ -596,11 +596,11 @@ img{max-width:100%;border-radius:8px}.kpi{display:flex;flex-wrap:wrap;gap:.6rem;
 <p><small>Flecha = hora actual (parcial) vs la hora anterior; ▲ ≥ +1 punto, ▼ ≤ −1, ▶ parecido; con menos de 5 peleas se muestra «—». Líneas verticales de la gráfica: <b style="color:#ff5252">rojo</b> = el cerebro volvió a una versión anterior (rollback / restauración / NaN), <b style="color:#9aa4b2">gris</b> = reinicio del learner recargando su checkpoint (mismos pesos), <b style="color:#ffb74d">naranja</b> = el guardia ajustó el castigo/ayuda del entrenamiento, <b style="color:#c792ea">morado</b> = promoción de pelea. Lanza conecta = spear_hit/spear_throw · teleport conecta = tp_hit/tp_exec (combo_log.csv; ese archivo solo guarda desde las 11:00 del 2-nov). Fuente: fights.csv, combo_log.csv, fatality_log.csv y brain_events.jsonl. Se actualiza solo cada 5 min, sin tokens.</small></p></section>
 <section class="card" id="scorpion"><h2>Resumen de Scorpion</h2><div id="s_resumen" class="mu">cargando…</div></section>
 <!--MACEMUS--><!--borrado:mac-emus--><!--/MACEMUS-->
-<div id="removidos" hidden><div id="s_esp"></div><div id="s_fat"></div><div id="eh_sum"></div><div id="eh_t"></div><div id="me_sum"></div><div id="me_t"></div><div id="meta"></div><div id="sa_box"></div><div id="box"></div><div id="sa_mac"></div><div id="mac"></div><div id="s_emus"></div></div><!-- orden del dueño 2026-11-09: paneles borrados (esp-hora, mac-emus, emus); se dejan ids vacíos para que el código del panel no falle -->
+<div id="removidos" hidden><div id="s_hora"></div><div id="s_esp"></div><div id="s_fat"></div><div id="eh_sum"></div><div id="eh_t"></div><div id="me_sum"></div><div id="me_t"></div><div id="meta"></div><div id="sa_box"></div><div id="box"></div><div id="sa_mac"></div><div id="mac"></div><div id="s_emus"></div></div><!-- orden del dueño 2026-11-09: paneles borrados (esp-hora, mac-emus, emus); se dejan ids vacíos para que el código del panel no falle -->
 <!--ESPHORA--><!--borrado:esp-hora--><!--/ESPHORA-->
 
 
-<section class="card" id="hora"><h2>% de victorias por hora (hora de Ciudad Juárez)</h2><div id="s_hora"></div></section>
+
 <section class="card" id="grafica"><h2>Gráfica de victorias</h2><img id="chart" alt="gráfica" ></section>
 
 <div id="gated">
