@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Control LK · MK2</title>
+<style>
+:root{--bg:#0e1116;--card:#171c24;--line:#2a313c;--tx:#e6e9ee;--mu:#8b95a5;--ok:#3ddc84;--bad:#ff5252;--ac:#8ab4ff;--warn:#ffb74d}
+*{box-sizing:border-box}body{margin:0;font:15px/1.45 system-ui,sans-serif;background:var(--bg);color:var(--tx)}
+header{position:sticky;top:0;z-index:5;background:#0b0e13;border-bottom:1px solid var(--line);padding:.5rem 1rem;display:flex;flex-wrap:wrap;gap:.6rem;align-items:center}
+header h1{font-size:1.15rem;margin:0}header a{color:var(--ac);text-decoration:none;font-size:.85rem}
+main{max-width:1100px;margin:0 auto;padding:1rem}
+section.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1rem 1.1rem;margin:0 0 1rem;overflow-x:auto}
+section.card>h2{font-size:1.05rem;margin:0 0 .6rem}
+table{border-collapse:collapse;width:100%;font-size:.88rem}td,th{padding:.3rem .5rem;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{color:var(--mu);font-weight:600}
+.mu,small{color:var(--mu)}.g{color:var(--ok);font-weight:600}.r{color:var(--bad);font-weight:600}.w{color:var(--warn);font-weight:600}
+.btn{display:inline-block;background:#2f6fe0;color:#fff;border:0;text-decoration:none;padding:.3rem .8rem;border-radius:7px;font-weight:600;cursor:pointer;font-size:.85rem}.btn:hover{filter:brightness(1.15)}
+.btn.gr{background:#2b8a57}.btn.r{background:#c62828}.btn.gh{background:transparent;border:1px solid var(--line);color:var(--tx)}
+input,select,textarea{background:#0e1116;color:var(--tx);border:1px solid var(--line);border-radius:6px;padding:.25rem .4rem;font:inherit}
+textarea{width:100%;min-height:8rem;font:13px/1.4 ui-monospace,monospace}
+.tabs{display:flex;gap:.4rem;margin:0 0 1rem}.tabs button{flex:1;padding:.55rem;border-radius:9px;border:1px solid var(--line);background:var(--card);color:var(--tx);font-weight:700;cursor:pointer}
+.tabs button.on{background:#2f6fe0;border-color:#2f6fe0}
+.emus{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:.6rem}
+.emu{border:1px solid var(--line);border-radius:10px;padding:.55rem .65rem}.emu.ch{border-color:var(--warn)}
+.emu h3{margin:0 0 .35rem;font-size:.95rem;display:flex;justify-content:space-between}
+.seg{display:flex;gap:.25rem;margin:.2rem 0 .35rem}.seg button,.chip{border:1px solid var(--line);background:transparent;color:var(--tx);border-radius:6px;padding:.15rem .45rem;cursor:pointer;font-size:.8rem}
+.seg button.on{background:#2b8a57;border-color:#2b8a57}.seg button.on.ev{background:#7a4fd0;border-color:#7a4fd0}.seg button.on.off{background:#5a5f69;border-color:#5a5f69}
+.chips{display:flex;flex-wrap:wrap;gap:.25rem}.chip.on{background:#2f6fe0;border-color:#2f6fe0}
+.kv input{width:7rem}.kv tr.ch td{background:#2a2310}
+.pill{display:inline-block;padding:.05rem .5rem;border-radius:999px;font-size:.78rem;border:1px solid var(--line)}
+.row{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin:.3rem 0}
+.hide{display:none!important}pre{white-space:pre-wrap;margin:0;font-size:.8rem}
+#lock{max-width:360px;margin:15vh auto;text-align:center}
+</style></head><body>
+<div id="lock" class="hide"><h2>Control LK</h2><p class="mu">Contraseña del panel</p><input id="pw" type="password" onkeydown="if(event.key==='Enter')unlock()"> <button class="btn" onclick="unlock()">Entrar</button><p id="pwmsg" class="mu"></p></div>
+<div id="app" class="hide">
+<header><h1>🧊 Control LK</h1><a href="index.html">← Panel</a><span id="upd" class="mu" style="margin-left:auto;font-size:.8rem"></span></header>
+<main>
+<div class="tabs"><button id="t_srv" class="on" onclick="node('srv')">🖥️ Servidor</button><button id="t_mac" onclick="node('mac')">🍎 Mac</button></div>
+
+<section class="card"><h2>Estado</h2><div id="estado" class="mu">cargando…</div></section>
+
+<section class="card"><h2>Jugador</h2><div class="row"><select id="jug"></select><button class="btn gh" onclick="addJug()">Agregar al programa</button><small id="jugnow" class="mu"></small></div></section>
+
+<section class="card"><h2>Emuladores · entrenamiento y evaluación</h2>
+<p class="mu" style="margin:.1rem 0 .6rem">Elige el rol y los niveles. Los cambios (borde amarillo) se agregan al programa con «Agregar cambios».</p>
+<div id="emus" class="emus"></div><div class="row" style="margin-top:.6rem"><button class="btn gh" onclick="addEmus()">Agregar cambios de emuladores</button></div></section>
+
+<section class="card"><h2>Recompensas, castigos, guías y fatality</h2>
+<div class="row"><input id="flt" placeholder="buscar (ej. uppercut, freeze, fatality)" oninput="drawKV()" style="flex:1;min-width:12rem">
+<label><input type="checkbox" id="both" checked> aplicar también en la otra máquina (mismos premios)</label></div>
+<table class="kv"><thead><tr><th>Clave</th><th>Tipo</th><th>Actual (servidor)</th><th>Nuevo</th></tr></thead><tbody id="kv"></tbody></table>
+<div class="row" style="margin-top:.6rem"><button class="btn gh" onclick="addKV()">Agregar cambios de premios</button><small class="mu">Sólo se cambian claves que ya existen. Aplican al reiniciar actores (se agrega solo).</small></div></section>
+
+<section class="card"><h2>Cerebros</h2><div id="lib" class="mu"></div>
+<div class="row"><input id="bname" placeholder="nombre (ej. SubZero_fatality_ok)" style="min-width:14rem"><button class="btn gh" onclick="addBrain('GUARDA')">Guardar cerebro actual</button></div>
+<div class="row"><select id="bsel"></select><label><input type="checkbox" id="bconf"> confirmo: respaldar el actual y cargar éste</label><button class="btn r" onclick="addBrain('CARGA')">Cargar</button><button class="btn gh" onclick="add('CEREBRO LISTA')">Listar</button></div>
+<small class="mu" id="libnote"></small></section>
+
+<section class="card"><h2>Videos y mantenimiento</h2>
+<div class="row">Grabar nivel <select id="gnv"></select><select id="gmodo"><option value="EVAL">como evaluación (argmax)</option><option value="MUESTREO">muestreo (entrenamiento)</option></select><button class="btn gh" onclick="add('GRABA '+$('gnv').value+' '+$('gmodo').value)">Agregar</button></div>
+<div class="row"><button class="btn gh" onclick="add('ACTORES REINICIA')">Reiniciar actores</button><button class="btn gh" onclick="add('ACTORES PARA')">Parar actores</button><button class="btn gh" onclick="add('ACTORES ARRANCA')">Arrancar actores</button><button class="btn gh" onclick="add('ESTADO')">Estado</button><button class="btn gh" onclick="add('REVISA')">Revisar premios vs kit</button></div>
+<div class="row" id="kitrow">Kit (commit) <input id="kit" placeholder="ej. c781dbc" style="width:8rem"><button class="btn gh" onclick="addKit()">Aplicar kit</button></div></section>
+
+<section class="card" style="border-color:#2f6fe0"><h2>Programa LK</h2>
+<div class="row"><b>Servidor</b><small class="mu">(una orden por línea; puedes editar)</small></div><textarea id="p_srv" oninput="val()"></textarea><div id="v_srv" class="mu"></div>
+<div class="row"><b>Mac</b></div><textarea id="p_mac" oninput="val()"></textarea><div id="v_mac" class="mu"></div>
+<div class="row" style="margin-top:.6rem"><a class="btn gr" id="go_srv" target="_blank" rel="noopener">▶ Ejecutar en Servidor</a><a class="btn gr" id="go_mac" target="_blank" rel="noopener">▶ Ejecutar en Mac</a><button class="btn gh" onclick="$('p_srv').value='';$('p_mac').value='';val()">Limpiar</button></div>
+<small class="mu">«Ejecutar» abre GitHub con el pedido listo: pulsa «Submit new issue». El servidor lo firma y lo ejecuta en menos de 1 minuto; la respuesta aparece abajo y en el issue.</small></section>
+
+<section class="card"><h2>Historial</h2><div id="hist" class="mu"></div></section>
+</main></div>
+<script>
+const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ISSUE='https://github.com/inodeman/mk-stats/issues/new?';let CFG={},KEY='',D=null,NODE='srv',EM={},KVN={};
+const u8=b=>Uint8Array.from(atob(b),c=>c.charCodeAt(0));
+async function dec(e,k){const kk=await crypto.subtle.importKey('raw',new Uint8Array(k.match(/../g).map(h=>parseInt(h,16))),'AES-GCM',false,['decrypt']);return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:u8(e.iv)},kk,u8(e.ct))))}
+async function dkey(pw){const km=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveBits']);const hx=CFG.ksalt.match(/../g).map(h=>parseInt(h,16));
+ const b=await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt:new Uint8Array(hx),iterations:CFG.iter||100000},km,256);return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+async function chk(k){try{const r=await fetch('data/check.enc.json?t='+Date.now(),{cache:'no-store'});return (await dec(await r.json(),k)).ok===1}catch(e){return false}}
+async function unlock(){const k=await dkey($('pw').value);if(await chk(k)){KEY=k;try{localStorage.setItem('k',k)}catch(e){}start()}else $('pwmsg').textContent='Contraseña incorrecta.'}
+async function boot(){try{CFG=await (await fetch('data/config.json',{cache:'no-store'})).json()}catch(e){}let k='';try{k=localStorage.getItem('k')||''}catch(e){}
+ if(k&&await chk(k)){KEY=k;start()}else $('lock').classList.remove('hide')}
+function start(){$('lock').classList.add('hide');$('app').classList.remove('hide');for(let i=1;i<=8;i++)$('gnv').add(new Option('nivel '+i,i));load();setInterval(load,30000)}
+async function load(){try{D=await dec(await (await fetch('data/lk_control.enc.json?t='+Date.now(),{cache:'no-store'})).json(),KEY);draw()}catch(e){$('estado').textContent='Sin datos todavía (el servidor publica cada 2 min).'}}
+function node(n){NODE=n;$('t_srv').classList.toggle('on',n==='srv');$('t_mac').classList.toggle('on',n==='mac');EM={};draw()}
+function add(line,n){const t=$('p_'+(n||NODE));t.value=(t.value.trim()?t.value.trim()+'\n':'')+line;val()}
+function badge(v){return v===true?'<span class="g">IGUAL</span>':v===false?'<span class="r">DISTINTO</span>':'<span class="mu">sin dato</span>'}
+function draw(){if(!D)return;$('upd').textContent='datos '+D.updated;
+ const p=D.paridad||{},m=D.mac||{};
+ $('estado').innerHTML=NODE==='srv'?`Cerebro <b>v${esc(D.version)}</b> · jugador <b>${esc(D.jugador)}</b> · learner ${D.learner?'<span class="g">activo</span>':'<span class="r">apagado</span>'} · nodo LK ${D.lk_srv?'<span class="g">activo</span>':'<span class="r">apagado</span>'}<br>Paridad con la Mac: premios ${badge(p.reward)} · guías ${badge(p.prior)} · fatality ${badge(p.fatality)}`
+  :`Último contacto LK: <b>${esc(m.t||'—')}</b> · kit ${esc((m.kit||'—').slice(0,7))}<br>Premios ${badge(p.reward)} · guías ${badge(p.prior)} · fatality ${badge(p.fatality)} <small>(vs servidor)</small>`;
+ if((D.pend||[]).length)$('estado').innerHTML+='<br><span class="w">En curso:</span> '+D.pend.map(x=>`#${x.issue} → ${x.nodo}`).join(', ');
+ const js=$('jug');js.innerHTML='';(NODE==='srv'?['subzero','scorpion']:['subzero']).forEach(j=>js.add(new Option(j==='subzero'?'Sub-Zero':'Scorpion',j)));js.value=D.jugador;$('jugnow').textContent=NODE==='srv'?'ahora: '+D.jugador:'';
+ drawEmus();drawKV();
+ const L=D.biblioteca||[];$('lib').innerHTML=NODE==='srv'?(L.length?'Biblioteca del servidor: '+L.map(b=>`<span class="pill">${esc(b.nombre)} <small>${esc(b.t)}</small></span>`).join(' '):'Biblioteca vacía.'):'La lista de la Mac llega con «Listar» (aparece en el historial).';
+ const bs=$('bsel');bs.innerHTML='';L.forEach(b=>bs.add(new Option(b.nombre,b.nombre)));if(NODE==='mac')bs.add(new Option('(escribe el nombre arriba)',''));
+ $('libnote').textContent=NODE==='mac'?'En la Mac (modo actor) el siguiente cerebro que publique el servidor reemplaza al que cargues.':'Cargar detiene learner y emuladores, respalda el cerebro actual en la biblioteca y arranca de nuevo.';
+ $('kitrow').classList.toggle('hide',NODE!=='mac');
+ $('hist').innerHTML=(D.hist||[]).length?'<table><tr><th>Hora</th><th>Máquina</th><th>Programa</th><th>Resultado</th></tr>'+D.hist.map(h=>`<tr><td>${esc(h.t)}<br><a href="https://github.com/inodeman/mk-stats/issues/${h.issue}" target="_blank" rel="noopener">#${h.issue}</a></td><td>${esc(h.nodo)}</td><td><pre>${esc(h.prog)}</pre></td><td class="${h.ok?'':'r'}"><pre>${esc(h.resumen)}</pre></td></tr>`).join('')+'</table>':'Todavía no hay órdenes desde el panel.';
+ val()}
+function emuList(){if(NODE==='srv')return D.emus||[];const ids=[20,40,41,42,43,44,45,46,47];return ids.map(i=>{const x=(D.mac_emus||{})[i]||{};return {id:i,rol:x.rol||null,niveles:x.niveles||[],t:x.t}})}
+function drawEmus(){const box=$('emus');box.innerHTML='';
+ emuList().forEach(e=>{const s=EM[e.id]||{rol:e.rol,niveles:[...e.niveles]},ch=EM[e.id]&&(s.rol!==e.rol||JSON.stringify(s.niveles)!==JSON.stringify(e.niveles));
+  const d=document.createElement('div');d.className='emu'+(ch?' ch':'');
+  d.innerHTML=`<h3><span>Emulador ${e.id}</span><small class="mu">${NODE==='mac'?(e.t?'orden '+esc(e.t.slice(5,16)):'sin orden LK'):''}</small></h3>
+  <div class="seg">${[['entrena','Entrena',''],['evalua','Evalúa','ev'],['apaga','Apagado','off']].map(([r,l,c])=>`<button class="${c} ${s.rol===r?'on':''}" data-r="${r}">${l}</button>`).join('')}</div>
+  <div class="chips">${[1,2,3,4,5,6,7,8].map(n=>`<button class="chip ${s.niveles.includes(n)?'on':''}" data-n="${n}" ${s.rol==='apaga'?'disabled':''}>${n}</button>`).join('')}</div>`;
+  d.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{EM[e.id]={...s,rol:b.dataset.r};drawEmus()});
+  d.querySelectorAll('[data-n]').forEach(b=>b.onclick=()=>{const n=+b.dataset.n,l=s.niveles.includes(n)?s.niveles.filter(x=>x!==n):[...s.niveles,n].sort((a,b)=>a-b);EM[e.id]={...s,niveles:l};drawEmus()});
+  box.appendChild(d)})}
+function rng(l){const o=[];let i=0;while(i<l.length){let j=i;while(j+1<l.length&&l[j+1]===l[j]+1)j++;o.push(j>i?l[i]+'-'+l[j]:''+l[i]);i=j+1}return o.join(',')}
+function addEmus(){let n=0;for(const[id,s]of Object.entries(EM)){if(!s.rol)continue;if(s.rol!=='apaga'&&!s.niveles.length){alertMsg('Emulador '+id+': elige al menos un nivel');return}
+ add('EMULADOR '+id+' '+(s.rol==='apaga'?'APAGA':(s.rol==='evalua'?'EVALUA ':'ENTRENA ')+rng(s.niveles)));n++}EM={};drawEmus()}
+function alertMsg(t){$('v_'+NODE).innerHTML='<span class="r">'+esc(t)+'</span>'}
+const SEC={reward:'PREMIO',prior:'GUIA',fatality:'FATALITY'};
+function kind(sec,k,v){if(sec!=='reward')return SEC[sec];return /penal|loss|timeout|whiff|time_pen/i.test(k)||(typeof v==='number'&&v<0)?'CASTIGO':'PREMIO'}
+function drawKV(){if(!D)return;const f=$('flt').value.toLowerCase(),rows=[];
+ for(const sec of ['reward','prior','fatality'])for(const[k,v]of Object.entries(D[sec]||{})){if(f&&!(sec+'.'+k).toLowerCase().includes(f))continue;
+  if(typeof v==='string'&&v.length>40)continue;const id=sec+'.'+k,kd=kind(sec,k,v),nv=KVN[id];
+  rows.push(`<tr class="${nv!==undefined?'ch':''}"><td>${esc(k)} <small class="mu">${sec}</small></td><td><span class="pill ${kd==='CASTIGO'?'r':''}">${kd}</span></td><td>${esc(JSON.stringify(v))}</td><td>${typeof v==='boolean'?`<select data-k="${esc(id)}"><option value="">—</option><option ${nv===true?'selected':''}>true</option><option ${nv===false?'selected':''}>false</option></select>`:`<input data-k="${esc(id)}" value="${nv!==undefined?esc(JSON.stringify(nv)):''}" placeholder="${esc(JSON.stringify(v))}">`}</td></tr>`)}
+ $('kv').innerHTML=rows.join('')||'<tr><td colspan="4" class="mu">Nada coincide.</td></tr>';
+ $('kv').querySelectorAll('[data-k]').forEach(i=>i.onchange=()=>{const k=i.dataset.k;if(i.value===''){delete KVN[k]}else{try{KVN[k]=JSON.parse(i.value)}catch(e){i.style.borderColor='var(--bad)';return}}i.style.borderColor='';drawKV()})}
+function addKV(){const ls=[];for(const[id,v]of Object.entries(KVN)){const sec=id.split('.')[0],k=id.slice(sec.length+1);ls.push(kind(sec,k,(D[sec]||{})[k])+' '+k+' = '+JSON.stringify(v))}
+ if(!ls.length)return;const tgt=$('both').checked?['srv','mac']:[NODE];tgt.forEach(n=>{ls.forEach(l=>add(l,n));add('ACTORES REINICIA',n)});KVN={};drawKV()}
+function addJug(){add('JUGADOR '+$('jug').value)}
+function addBrain(a){const n=a==='GUARDA'?$('bname').value.trim():($('bsel').value||$('bname').value.trim());if(!/^[A-Za-z0-9][A-Za-z0-9_.\-]{0,39}$/.test(n)){alertMsg('Nombre inválido: letras, números, _ . - (máx 40)');return}
+ if(a==='CARGA'&&!$('bconf').checked){alertMsg('Marca la casilla de confirmación para cargar un cerebro');return}add('CEREBRO '+a+' '+n);$('bconf').checked=false}
+function addKit(){const c=$('kit').value.trim();if(!/^[0-9a-f]{7,40}$/.test(c)){alertMsg('Commit inválido');return}add('KIT '+c,'mac');add('REVISA','mac');add('ACTORES REINICIA','mac')}
+const RX=[/^PING$|^ESTADO$|^REVISA$/,/^KIT [0-9a-f]{7,40}$/,/^JUGADOR [a-z0-9_]{2,20}$/,/^EMULADOR \d{1,2} (ENTRENA|EVALUA) [\d,\-]+$|^EMULADOR \d{1,2} APAGA$/,/^(PREMIO|CASTIGO|GUIA|FATALITY) [A-Za-z_][\w.]* = .+$/,/^ACTORES (REINICIA|PARA|ARRANCA)$/,/^CEREBRO (GUARDA|CARGA) [A-Za-z0-9][\w.\-]{0,39}$|^CEREBRO LISTA$/,/^GRABA [1-8]( EVAL| MUESTREO)?$/,/^LOG [\w\-]{1,40}( \d+)?$/,/^ESPERA \d{1,3}$/];
+function val(){for(const n of ['srv','mac']){const ls=$('p_'+n).value.split('\n').map(x=>x.trim()).filter(x=>x&&!x.startsWith('#')),bad=ls.filter(l=>!RX.some(r=>r.test(l)));
+ $('v_'+n).innerHTML=!ls.length?'vacío':bad.length?'<span class="r">No es LK válido: '+esc(bad.join(' | '))+'</span>':'<span class="g">'+ls.length+' orden(es) válidas</span>';
+ const a=$('go_'+n);if(ls.length&&!bad.length){a.href=ISSUE+new URLSearchParams({title:'lk '+n,body:'```lk\n'+ls.join('\n')+'\n```'}).toString();a.classList.remove('hide')}else{a.removeAttribute('href');a.classList.add('hide')}}}
+boot();
+</script></body></html>
