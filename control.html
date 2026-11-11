@@ -40,7 +40,7 @@ textarea{width:100%;min-height:8rem;font:13px/1.4 ui-monospace,monospace}
 <section class="card"><h2>Jugador</h2><div class="row"><select id="jug"></select><button class="btn gh" onclick="addJug()">Agregar al programa</button><small id="jugnow" class="mu"></small></div></section>
 
 <section class="card"><h2>Emuladores · entrenamiento y evaluación</h2>
-<p class="mu" style="margin:.1rem 0 .6rem">Elige el rol y los niveles. Los cambios (borde amarillo) se agregan al programa con «Agregar cambios».</p>
+<p class="mu" style="margin:.1rem 0 .6rem">Elige el rol y los niveles. Aquí están los del servidor y los de la Mac juntos. Los cambios (borde amarillo) se agregan al programa de la máquina correcta con «Agregar cambios».</p>
 <div id="emus" class="emus"></div><div class="row" style="margin-top:.6rem"><button class="btn gh" onclick="addEmus()">Agregar cambios de emuladores</button></div></section>
 
 <section class="card"><h2>Recompensas, castigos, guías y fatality</h2>
@@ -80,7 +80,7 @@ async function boot(){try{CFG=await (await fetch('data/config.json',{cache:'no-s
  if(k&&await chk(k)){KEY=k;start()}else $('lock').classList.remove('hide')}
 function start(){$('lock').classList.add('hide');$('app').classList.remove('hide');for(let i=1;i<=8;i++)$('gnv').add(new Option('nivel '+i,i));load();setInterval(load,30000)}
 async function load(){try{D=await dec(await (await fetch('data/lk_control.enc.json?t='+Date.now(),{cache:'no-store'})).json(),KEY);draw()}catch(e){$('estado').textContent='Sin datos todavía (el servidor publica cada 2 min).'}}
-function node(n){NODE=n;$('t_srv').classList.toggle('on',n==='srv');$('t_mac').classList.toggle('on',n==='mac');EM={};draw()}
+function node(n){NODE=n;$('t_srv').classList.toggle('on',n==='srv');$('t_mac').classList.toggle('on',n==='mac');draw()}
 function add(line,n){const t=$('p_'+(n||NODE));t.value=(t.value.trim()?t.value.trim()+'\n':'')+line;val()}
 function badge(v){return v===true?'<span class="g">IGUAL</span>':v===false?'<span class="r">DISTINTO</span>':'<span class="mu">sin dato</span>'}
 function draw(){if(!D)return;$('upd').textContent='datos '+D.updated;
@@ -96,19 +96,19 @@ function draw(){if(!D)return;$('upd').textContent='datos '+D.updated;
  $('kitrow').classList.toggle('hide',NODE!=='mac');
  $('hist').innerHTML=(D.hist||[]).length?'<table><tr><th>Hora</th><th>Máquina</th><th>Programa</th><th>Resultado</th></tr>'+D.hist.map(h=>`<tr><td>${esc(h.t)}<br><a href="https://github.com/inodeman/mk-stats/issues/${h.issue}" target="_blank" rel="noopener">#${h.issue}</a></td><td>${esc(h.nodo)}</td><td><pre>${esc(h.prog)}</pre></td><td class="${h.ok?'':'r'}"><pre>${esc(h.resumen)}</pre></td></tr>`).join('')+'</table>':'Todavía no hay órdenes desde el panel.';
  val()}
-function emuList(){if(NODE==='srv')return D.emus||[];const ids=[20,40,41,42,43,44,45,46,47];return ids.map(i=>{const x=(D.mac_emus||{})[i]||{};return {id:i,rol:x.rol||null,niveles:x.niveles||[],t:x.t}})}
-function drawEmus(){const box=$('emus');box.innerHTML='';
- emuList().forEach(e=>{const s=EM[e.id]||{rol:e.rol,niveles:[...e.niveles]},ch=EM[e.id]&&(s.rol!==e.rol||JSON.stringify(s.niveles)!==JSON.stringify(e.niveles));
+function emuList(){const m=[40,41,42,43,44,45,46,47].map(i=>{const x=(D.mac_emus||{})[i]||{};return {id:i,nodo:'mac',rol:x.rol||null,niveles:x.niveles||[],t:x.t}});return (D.emus||[]).map(e=>({...e,nodo:'srv'})).concat(m)}
+function drawEmus(){const box=$('emus');box.innerHTML='';let g='';
+ emuList().forEach(e=>{if(e.nodo!==g){g=e.nodo;const h=document.createElement('div');h.style.gridColumn='1/-1';h.innerHTML='<b>'+(g==='srv'?'🖥️ Servidor (2-11)':'🍎 Mac (40-47 = actor0-7 de la Mac)')+'</b>'+(g==='mac'?' <small class="mu">estado del último ESTADO de la Mac; pulse Estado en la pestaña Mac para refrescar</small>':'');box.appendChild(h)}const s=EM[e.id]||{nodo:e.nodo,rol:e.rol,niveles:[...e.niveles]},ch=EM[e.id]&&(s.rol!==e.rol||JSON.stringify(s.niveles)!==JSON.stringify(e.niveles));
   const d=document.createElement('div');d.className='emu'+(ch?' ch':'');
-  d.innerHTML=`<h3><span>Emulador ${e.id}</span><small class="mu">${NODE==='mac'?(e.t?'orden '+esc(e.t.slice(5,16)):'sin orden LK'):''}</small></h3>
+  d.innerHTML=`<h3><span>Emulador ${e.id}</span><small class="mu">${e.nodo==='mac'?(e.t?esc(e.t.slice(5,16)):'sin dato'):''}</small></h3>
   <div class="seg">${[['entrena','Entrena',''],['evalua','Evalúa','ev'],['apaga','Apagado','off']].map(([r,l,c])=>`<button class="${c} ${s.rol===r?'on':''}" data-r="${r}">${l}</button>`).join('')}</div>
   <div class="chips">${[1,2,3,4,5,6,7,8].map(n=>`<button class="chip ${s.niveles.includes(n)?'on':''}" data-n="${n}" ${s.rol==='apaga'?'disabled':''}>${n}</button>`).join('')}</div>`;
-  d.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{EM[e.id]={...s,rol:b.dataset.r};drawEmus()});
-  d.querySelectorAll('[data-n]').forEach(b=>b.onclick=()=>{const n=+b.dataset.n,l=s.niveles.includes(n)?s.niveles.filter(x=>x!==n):[...s.niveles,n].sort((a,b)=>a-b);EM[e.id]={...s,niveles:l};drawEmus()});
+  d.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{EM[e.id]={...s,nodo:e.nodo,rol:b.dataset.r};drawEmus()});
+  d.querySelectorAll('[data-n]').forEach(b=>b.onclick=()=>{const n=+b.dataset.n,l=s.niveles.includes(n)?s.niveles.filter(x=>x!==n):[...s.niveles,n].sort((a,b)=>a-b);EM[e.id]={...s,nodo:e.nodo,niveles:l};drawEmus()});
   box.appendChild(d)})}
 function rng(l){const o=[];let i=0;while(i<l.length){let j=i;while(j+1<l.length&&l[j+1]===l[j]+1)j++;o.push(j>i?l[i]+'-'+l[j]:''+l[i]);i=j+1}return o.join(',')}
 function addEmus(){let n=0;for(const[id,s]of Object.entries(EM)){if(!s.rol)continue;if(s.rol!=='apaga'&&!s.niveles.length){alertMsg('Emulador '+id+': elige al menos un nivel');return}
- add('EMULADOR '+id+' '+(s.rol==='apaga'?'APAGA':(s.rol==='evalua'?'EVALUA ':'ENTRENA ')+rng(s.niveles)));n++}EM={};drawEmus()}
+ add('EMULADOR '+id+' '+(s.rol==='apaga'?'APAGA':(s.rol==='evalua'?'EVALUA ':'ENTRENA ')+rng(s.niveles)),s.nodo||(+id>=20?'mac':'srv'));n++}EM={};drawEmus()}
 function alertMsg(t){$('v_'+NODE).innerHTML='<span class="r">'+esc(t)+'</span>'}
 const SEC={reward:'PREMIO',prior:'GUIA',fatality:'FATALITY'};
 function kind(sec,k,v){if(sec!=='reward')return SEC[sec];return /penal|loss|timeout|whiff|time_pen/i.test(k)||(typeof v==='number'&&v<0)?'CASTIGO':'PREMIO'}
