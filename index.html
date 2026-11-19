@@ -3100,7 +3100,7 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 let KEY=localStorage.getItem('k')||'';
 const u8=x=>Uint8Array.from(atob(x),c=>c.charCodeAt(0));
 async function dec(e,k){const kk=await crypto.subtle.importKey('raw',new Uint8Array(k.match(/../g).map(h=>parseInt(h,16))),'AES-GCM',false,['decrypt']);return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:u8(e.iv)},kk,u8(e.ct))))}
-async function J(u){const n=u.replace(/^data\//,'').replace(/\.json$/,'');if(FEEDD&&FEEDD[n]!==undefined&&Date.now()/1000-FEEDTS<600)return FEEDD[n];const r=await fetch('data/'+n+'.enc.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw u;return dec(await r.json(),KEY)}
+async function J(u){const n=u.replace(/^data\//,'').replace(/\.json$/,'');if(n!=='scorpion_progress'&&FEEDD&&FEEDD[n]!==undefined&&Date.now()/1000-FEEDTS<60)return FEEDD[n];/*pg_fresh_v1 2026-11-18 owner «1 minuto»*/const r=await fetch('data/'+n+'.enc.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw u;return dec(await r.json(),KEY)}
 /* ---------- pedidos en vivo (pt5454u): feed cifrado en la rama `feed` de este repo, lo sube el Box cada orders_refresh_s (mk-stats settings/panel.json, unica fuente; viaja como refresh_s dentro del feed). raw.githubusercontent.com guarda 5 min por URL: se pide con un nombre de archivo percent-encoded distinto cada vez (mismo archivo, otra llave de cache). Si el feed falla, J() cae a data/*.enc.json de Pages. ---------- */
 let FEEDD=null,FEEDTS=0,FEEDRS=60,FEEDTM=null;
 const rfn=()=>[...'orders_feed.enc.json'].map(c=>Math.random()<.5?'%'+c.charCodeAt(0).toString(16).toUpperCase().padStart(2,'0'):c).join('');
