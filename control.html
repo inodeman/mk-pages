@@ -129,4 +129,10 @@ function val(){for(const n of ['srv','mac']){const ls=$('p_'+n).value.split('\n'
  $('v_'+n).innerHTML=!ls.length?'vacío':bad.length?'<span class="r">No es LK válido: '+esc(bad.join(' | '))+'</span>':'<span class="g">'+ls.length+' orden(es) válidas</span>';
  const a=$('go_'+n);if(ls.length&&!bad.length){a.href=ISSUE+new URLSearchParams({title:'lk '+n,body:'```lk\n'+ls.join('\n')+'\n```'}).toString();a.classList.remove('hide')}else{a.removeAttribute('href');a.classList.add('hide')}}}
 boot();
-</script></body></html>
+</script><section class="card" id="pedir-mk"><h3 style="margin:0 0 .5rem">Pedir video de Mortal Kombat</h3>
+<p style="margin:0 0 .5rem;color:var(--mu)">Escribe el pedido y se abre un aviso (issue) en inodeman/mk-stats para que la Box lo tome.</p>
+<textarea id="mkpedido" rows="4" style="width:100%" placeholder="Ej.: video de Kano peleando de la 1 a la 11, en orden"></textarea>
+<p style="margin:.5rem 0 0"><a class="btn" id="mkenviar" target="_blank" rel="noopener">Enviar pedido</a></p>
+<script>(function(){var t=document.getElementById('mkpedido'),a=document.getElementById('mkenviar');function u(){var x=t.value.trim();a.href='https://github.com/inodeman/mk-stats/issues/new?title='+encodeURIComponent('order mk-video: '+(x.slice(0,60)||'pedido'))+'&body='+encodeURIComponent(x||'(vacío)');}t.addEventListener('input',u);u();})();</script>
+</section>
+</body></html>
