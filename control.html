@@ -129,11 +129,5 @@ function val(){for(const n of ['srv','mac']){const ls=$('p_'+n).value.split('\n'
  $('v_'+n).innerHTML=!ls.length?'vacío':bad.length?'<span class="r">No es LK válido: '+esc(bad.join(' | '))+'</span>':'<span class="g">'+ls.length+' orden(es) válidas</span>';
  const a=$('go_'+n);if(ls.length&&!bad.length){a.href=ISSUE+new URLSearchParams({title:'lk '+n,body:'```lk\n'+ls.join('\n')+'\n```'}).toString();a.classList.remove('hide')}else{a.removeAttribute('href');a.classList.add('hide')}}}
 boot();
-</script><section class="card" id="pedir-mk"><h3 style="margin:0 0 .5rem">Pedir video de Mortal Kombat</h3>
-<p style="margin:0 0 .5rem;color:var(--mu)">Elige el nivel de inicio (1 a 12) y escribe el pedido. Se abre un aviso (issue) en inodeman/mk-stats para que la Box lo tome.</p>
-<label>Nivel (1 a 12): <input id="mknivel" type="number" min="1" max="12" value="1" style="width:5rem;font-size:1.1rem"></label>
-<textarea id="mkpedido" rows="4" style="width:100%;margin-top:.5rem" placeholder="Ej.: video de Kano peleando desde el nivel elegido, en orden"></textarea>
-<p style="margin:.5rem 0 0"><a class="btn" id="mkenviar" target="_blank" rel="noopener">Enviar pedido</a></p>
-<script>(function(){var n=document.getElementById('mknivel'),t=document.getElementById('mkpedido'),a=document.getElementById('mkenviar');function u(){var x=t.value.trim(),l=String(Math.min(12,Math.max(1,parseInt(n.value,10)||1)));a.href='https://github.com/inodeman/mk-stats/issues/new?title='+encodeURIComponent('order mk-video nivel '+l+': '+(x.slice(0,50)||'pedido'))+'&body='+encodeURIComponent('Nivel: '+l+'\n'+(x||'(vacío)'));}n.addEventListener('input',u);t.addEventListener('input',u);u();})();</script>
-</section>
+</script>
 </body></html>
